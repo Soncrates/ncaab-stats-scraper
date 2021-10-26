@@ -53,3 +53,60 @@ http_header = {
 
 start_url = 'http://stats.ncaa.org/team/inst_team_list?sport_code=MBB&academic_year=' + str(academic_year) + "&division=1" # URL to start from (Change this for different years). You can get this URL from http://stats.ncaa.org/team/inst_team_list?sport_code=MBB&division=1. This URL is for the 2011-2012 season.
 domain_base = 'http://stats.ncaa.org' # Base domain
+
+
+class SportExtract() :
+            base_url = 'http://stats.ncaa.org'
+            headers = {"Content-Type": "application/x-www-form-urlencoded; charset=UTF-8"}
+            @staticmethod
+            def convert_params(default_params, kvargs) :
+                params = copy.deepcopy(default_params)
+                params.update(kvargs)
+                params "&".join([ "{}={}".format(key,value) for key, value in kvargs.items()])
+                return "{}/team/inst_team_list?{}".format(Base_Sport.base_url,params)
+            @staticmethod
+            def parse(**kvargs) :
+                kvargs.update({ key : int(value) for key, value in kvargs.items() in key in ["conf_id","division","academic_year"] })
+                return kvargs
+
+class Lacrosse() :
+            default_params = [{ "sport_code" : "MLA",
+                                "division" : 1 , #1,2,3
+                                "conf_id" : -1,
+                                "academic_year" : 2021
+                              }]
+            @staticmethod
+            def get_team_list(**kvargs) :
+                kvargs = SportExtract.parse(kvargs)
+                return SportExtract.convert_params(Lacrosse.default_params,kvargs)
+class Basketball() :
+            default_params = [{ "sport_code" : "MBB",
+                                "division" : 1 , #1,2,3
+                                "conf_id" : -1,
+                                "academic_year" : 2021
+                              }]
+            @staticmethod
+            def get_team_list(**kvargs) :
+                kvargs = SportExtract.parse(kvargs)
+                return SportExtract.convert_params(Basketball.default_params,kvargs)
+class FootBall() :
+            default_params = [{ "sport_code" : "MFB",
+                                "division" : 2 , #2,3,11,12
+                                "conf_id" : -1,
+                                "academic_year" : 2021
+                              }]
+            @staticmethod
+            def get_team_list(**kvargs) :
+                kvargs = SportExtract.parse(kvargs)
+                return SportExtract.convert_params(FootBall.default_params,kvargs)
+class Soccer() :
+            default_params = [{ "sport_code" : "MSO",
+                                "division" : 1 ,#1,2,3
+                                "conf_id" : -1,
+                                "academic_year" : 2021
+                              }]
+            @staticmethod
+            def get_team_list(**kvargs) :
+                kvargs = SportExtract.parse(kvargs)
+                return SportExtract.convert_params(Soccer.default_params,kvargs)
+           
