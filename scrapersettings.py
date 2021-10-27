@@ -59,6 +59,7 @@ domain_base = 'http://stats.ncaa.org' # Base domain
 class SportExtract() :
             base_url = 'http://stats.ncaa.org'
             headers = {"Content-Type": "application/x-www-form-urlencoded; charset=UTF-8"}
+            params = {}
             default_params = { "division" : 1 ,
                                 "conf_id" : -1,
                                 "academic_year" : 2021
