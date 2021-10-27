@@ -5,40 +5,34 @@
 ##############################################################
 
 # Import modules and libraries
-from scraperfunctions import grabber
-from scrapersettings import Lacrosse, Football, Basketball, Soccer, SportBase
+from scraperfunctions import grabber as POST
+from scrapersettings import Lacrosse, Football, Basketball, Soccer, SportExtract as BASE
 from bs4 import BeautifulSoup
 
-sports = [Lacrosse(),Football(),Basketball(),Soccer()]
+def step01_request_team_list(sport,**kvargs) :
+    url_by_division_list = sport.extract_team_list(**kvargs)
+    return [ POST(url, BASE.params, BASE.headers) for url in url_by_division_list]  
+def step02_parse_response(teamlist_response) :
+    link_list = BeautifulSoup(teamlist_response).find_all('a')
+    return { key : value for key, value in step02_transform(link) for link in link_list if step02_test(link) }
+def step02_test(link) :
+    return link.get('href').startswith('/team/')
+def step02_transform(link) :
+    return str(link.get_text()),  str(BASE.base_url  + link.get('href'))
+def team_list_by_sport(sport) :
+    team_list_by_division_list = step01_request_team_list(sport)
+    team_list_by_division_list = [ step02_parse_response(team_list) for team_list in team_list_by_division_list ]
+    return { k: v for k, v in team_list.items() for team_list in team_list_by_division_list }
+def write_csv(filename,team_list) :
+    with open(filename,'w') as f:
+         f.writelines("team_name\tteam_url\n"
+         for name, url in team_list.items() :
+             f.writelines("{}\t{}\n".format(name,url))
+def main() :
+    sport_list = [Lacrosse(),Football(),Basketball(),Soccer()]
+    sport_list = { "{sport_code}.csv".format(**sport.default_params) : team_list_by_sport(sport) for sport in sport_list }
+    for filename, team_list in sport_list.items() :
+        write_csv(filename, team_list)
 
-def step01(sport) :
-    teamlist_data = scraperfunctions.grabber(scrapersettings.start_url, scrapersettings.params, scrapersettings.http_header) # Get data from main page
-    teamlist_data_soup = BeautifulSoup(teamlist_data) # Soupify that data
-
-    for link in teamlist_data_soup.find_all('a'): # For each hyperlink on the page
-        if "team/index/" + str(scrapersettings.year_index) + "?org_id=" in link.get('href'): # If the hyperlink contains this string (limiting it only to team pages)
-            team_id = str(link.get('href').split("team/index/" + str(scrapersettings.year_index) + "?org_id=")[1]) # Get the team ID from the URL
-            team_name = str(link.get_text()) # Get the text associated with the hyperlink
-            team_url = str(scrapersettings.domain_base + link.get('href')) # Get the URL and append the base domain
-            team_mappingfile_w.writelines(str(team_id) + "\t" + str(team_name) + "\t" + str(team_url) + "\n") # Add lines to our TSV file for archival purposes
-
-
-if (scrapersettings.map_teams == 1):
-    print "Generating team mappings"
-    # Create the file headings
-    team_mappingfile_w = open(scrapersettings.team_mappingfile, "w")
-    team_mappingfile_w.writelines("team_id\tteam_name\tteam_url\n")
-
-    # Grab data
-    # Download the page with the list of teams
-    teamlist_data = scraperfunctions.grabber(scrapersettings.start_url, scrapersettings.params, scrapersettings.http_header) # Get data from main page
-    teamlist_data_soup = BeautifulSoup(teamlist_data) # Soupify that data
-
-    # Create a mapping for teams
-    for link in teamlist_data_soup.find_all('a'): # For each hyperlink on the page
-        if "team/index/" + str(scrapersettings.year_index) + "?org_id=" in link.get('href'): # If the hyperlink contains this string (limiting it only to team pages)
-            team_id = str(link.get('href').split("team/index/" + str(scrapersettings.year_index) + "?org_id=")[1]) # Get the team ID from the URL
-            team_name = str(link.get_text()) # Get the text associated with the hyperlink
-            team_url = str(scrapersettings.domain_base + link.get('href')) # Get the URL and append the base domain
-            team_mappingfile_w.writelines(str(team_id) + "\t" + str(team_name) + "\t" + str(team_url) + "\n") # Add lines to our TSV file for archival purposes
-    print "Successfully generated team mappings"
+if __name__ == "__main__" :
+   main()
