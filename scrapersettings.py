@@ -91,7 +91,7 @@ class Basketball() :
                 return SportExtract.convert_params(Basketball.default_params,kvargs)
 class FootBall() :
             default_params = [{ "sport_code" : "MFB",
-                                "division" : 2 , #2,3,11,12
+                                "division" : 2 , #2,3,11,12 cooresponds to II,III,FBS,FCS
                                 "conf_id" : -1,
                                 "academic_year" : 2021
                               }]
