@@ -3,8 +3,6 @@
 # Program name: NCAA Stats Scraper (Team Mappings Module)
 # Version: 1.0
 ##############################################################
-
-# Import modules and libraries
 from glob import glob
 from scraperfunctions import grabber as POST
 from scrapersettings import SportExtract as BASE
