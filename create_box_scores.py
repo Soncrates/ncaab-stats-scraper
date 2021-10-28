@@ -3,7 +3,6 @@
 # Program name: NCAA Stats Scraper (Team Mappings Module)
 # Version: 1.0
 ##############################################################
-from glob import glob
 from scraperfunctions import grabber as EXTRACT
 from scrapersettings import SportExtract as BASE
 from bs4 import BeautifulSoup as TRANSFORM
@@ -36,7 +35,7 @@ def step03_extract_box_scores(url) :
 def step03_transform_box_scores(response) :
     soup = TRANSFORM(response,features="html.parser")
     table_list = soup.findAll('table', attrs={'class':'mytable'})
-    print(table_list)
+    print(table_list[0])
     return [ step03_transform_table(table) for table in table_list is step03_test(table) ]
 def step03_test(table) :
     return True
@@ -46,6 +45,7 @@ def step03_transform_table(soup_table) :
     column_list = [ col.text.strip() for col in table_body.findAll('tr', attrs={'class':'grey_heading'})[0].find_all('th') ]
     row_list = [ ele.text.strip() for ele in cols for cols in row.findAll('td') for row in table_body.find_all('tr', attrs={'class':'smtext'})]
     total = [ col.text.strip() for col in table_body.findAll('tr', attrs={'class':'grey_heading'})[-1].find_all('th') ]
+    print((team_name, column_list, row_list))
     return team_name, column_list, row_list
     
 def by_sport(filename) :
