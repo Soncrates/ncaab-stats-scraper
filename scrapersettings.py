@@ -17,13 +17,12 @@ class SportExtract() :
                                 "conf_id" : -1,
                                 "academic_year" : 2021
                               }
-
             @staticmethod
             def convert_params(default_args, kvargs) :
                 ret = deepcopy(default_args)
                 ret.update(kvargs)
                 ret = "&".join([ "{}={}".format(key,value) for key, value in ret.items()])
-                return "{}/team/inst_team_list?{}".format(Base_Sport.base_url,ret)
+                return "{}/team/inst_team_list?{}".format(SportExtract.base_url,ret)
             @staticmethod
             def parse(**kvargs) :
                 ret = deepcopy(SportExtract.default_params)
@@ -47,7 +46,7 @@ class Basketball() :
             def url_team_list(cls,**kvargs) :
                 kvargs = SportExtract.parse(**kvargs)
                 return [ SportExtract.convert_params(params,kvargs) for params in cls.default_params ]
-class FootBall() :
+class Football() :
             default_params = [{ "sport_code" : "MFB",
                                 "division" : 11  #2,3,11,12 cooresponds to II,III,FBS,FCS
                               }]
