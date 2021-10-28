@@ -10,8 +10,9 @@ from bs4 import BeautifulSoup
 
 def step01_read_team_list(filename):
     with open(filename, "rb") as f :
-         team_map = f.readlines()[1:]
-         return { name : url for name, url in v[0],v[1] for v in vars.split("\t") for vars in team_map }
+         team_list = f.readlines()[1:]
+         team_list = [ team.split("\t") for team in team_list ]
+         return { var[0] : var[1] for var in team_list }
 def step02_extract_team_data(*team_list):
     return [ POST(url, BASE.params, BASE.headers) for url in team_list ]
 def step02_parse_response_for_box_scores(team_response) :
