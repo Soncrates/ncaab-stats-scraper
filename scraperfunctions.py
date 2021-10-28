@@ -21,7 +21,7 @@ def create_cookie():
     return build_opener(ret)
 @retry(URLError, tries=4, delay=3, backoff=2)
 def grabber(url, params, http_header):
-    req = POST(url, urlencode(params).encode('utf-8'), http_header)
-    res = create_cookie().open(req)
-    data = res.read()
-    return(data)
+    ret = POST(url, urlencode(params).encode('utf-8'), http_header).read()
+    #res = create_cookie().open(req)
+    #data = res.read()
+    return(ret.text)
