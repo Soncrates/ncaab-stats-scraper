@@ -14,6 +14,7 @@ def step01_request_team_list(sport,**kvargs) :
 def step02_parse_response(response) :
     link_list = TRANSFORM(response,features="html.parser").findAll('a')
     link_list = [ step02_transform(link) for link in link_list if step02_test(link) ]
+    link_list = { key : value for key,value in link_list }
     print(link_list)
     return { key : value for key, value in step02_transform(link) for link in link_list if step02_test(link) }
 def step02_test(link) :
