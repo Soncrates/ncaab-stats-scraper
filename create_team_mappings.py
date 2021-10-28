@@ -13,7 +13,9 @@ def step01_request_team_list(sport,**kvargs) :
     url_by_division_list = sport.extract_team_list(**kvargs)
     return [ POST(url, BASE.params, BASE.headers) for url in url_by_division_list]  
 def step02_parse_response(teamlist_response) :
+    print(teamlist_response)
     link_list = BeautifulSoup(teamlist_response).find_all('a')
+    print(link_list)
     return { key : value for key, value in step02_transform(link) for link in link_list if step02_test(link) }
 def step02_test(link) :
     return link.get('href').startswith('/team/')
