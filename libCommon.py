@@ -65,7 +65,7 @@ def is_json_enabled(obj) :
 def transform_obj(obj) :
     if obj is None :
         raise ValueError('Object is None')
-    if isinstance(obj,(float, int, long, str, dict, tuple)) : 
+    if isinstance(obj,(float, int, str, dict, tuple)) : 
         return obj
     if isinstance(obj,list) :
         return [ transform_object(arg) for arg in obj if is_str(arg) ]
