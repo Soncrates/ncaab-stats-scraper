@@ -23,8 +23,9 @@ jobs:
       - name: Run tests 
         run: |
            pwd
-           ls -la
            cd test
            ls -la
            python testScrapperSettings.py
            cat ../log/testScrapperSettings.log
+           python testTeamMapping.py.py
+           cat ../log/testTeamMapping.py.log
