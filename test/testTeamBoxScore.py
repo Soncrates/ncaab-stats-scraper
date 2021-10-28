@@ -19,6 +19,7 @@ class TestScrapeBoxScore(unittest.TestCase) :
     def testLacrosseStep02(self) :
         obj = [ TEST.step02_parse_response_for_box_scores(team_list) for team_list in [self.team_MLA_Navy] ]
         log.debug(COMMON.pretty_print(obj))
+        log.debug(sorted(obj))
 
 if __name__ == '__main__' :
    import sys
