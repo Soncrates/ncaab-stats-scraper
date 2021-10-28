@@ -2,6 +2,7 @@
 from glob import glob
 from json import dumps, load, loads
 from os import path, environ, remove, stat, mkdir as MKDIR
+import logging
 import pandas as PD
 from sys import version_info
 from time import time, sleep
@@ -22,6 +23,7 @@ else:
 LOG_FORMAT_TEST = '%(levelname)s [%(module)s.%(funcName):%(lineno)d] %(message)s'
 LOG_FORMAT_APP = '[%(asctime)] %(levelname)s [%(module)s.%(funcName):%(lineno)d] %(message)s'
 LOG_FORMAT_DATE = "%Y%m%dT%"
+LOG = logging.getLogger(__name__) 
 
 def find_files(path_name) :
     return glob('{}*'.format(str(path_name).strip('*')))
@@ -34,7 +36,7 @@ def mkdir(pathname) :
     if path.exists(pathname):
        logging.info('Already exists : {}'.format(pathname))
        return
-    logging.info('Creating directory {}'.format(pathname))
+    LOG.info('Creating directory {}'.format(pathname))
     MKDIR(pathname)
 def load_environ() :
      return { key : environ[key] for key in environ if is_environ(key) }
