@@ -6,7 +6,7 @@ import scrapersettings as TEST
 import unittest
 import logging as log
 
-class TestFILL_IN_THE_BLANK(unittest.TestCase) :
+class TestScraperSettings(unittest.TestCase) :
     def setUp(self) : 
         COMMON.mkdir("../log")
     def testLacrosse(self) :
