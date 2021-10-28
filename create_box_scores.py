@@ -6,6 +6,7 @@
 from scraperfunctions import grabber as EXTRACT
 from scrapersettings import SportExtract as BASE
 from bs4 import BeautifulSoup as TRANSFORM
+import pandas as PY
 
 def step01_read_team_list(filename):
     with open(filename, "rb") as f :
@@ -42,10 +43,9 @@ def step03_transform_table(soup_table) :
     row_list = soup_table.findAll('tr', attrs={'class':'smtext'})
     row_list = step03_transform_rows(row_list)
     total = grey_header_list[-1]
-    print(total)
-    total = step03_transform_rows([ total ])
-    print((team_name, column_list, row_list,total[0]))
-    return team_name, column_list, row_list
+    row_list.append(step03_transform_rows([ total ])
+    ret = PY.DataFrames(row_list,columns=column_list)
+    return { team_name : ret }
 def step03_transform_rows(soup_row_list) :
     td_list = [ tr.findAll('td') for tr in soup_row_list ]
     ret = []
