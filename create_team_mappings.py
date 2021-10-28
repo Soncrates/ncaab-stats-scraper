@@ -25,7 +25,7 @@ def team_list_by_sport(*url_by_division_list) :
     return { k: v for k, v in team_list.items() for team_list in ret }
 def write_csv(filename,team_list) :
     with open(filename,'w') as f:
-         f.writelines("team_name\tteam_url\n"
+         f.writelines("team_name\tteam_url\n")
          for name, url in team_list.items() :
              f.writelines("{}\t{}\n".format(name,url))
 def main() :
