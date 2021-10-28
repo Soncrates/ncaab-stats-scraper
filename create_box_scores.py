@@ -21,23 +21,11 @@ def step02_test(link) :
     return link.get('href').endswith('box_score')
 def step02_transform(link) :
     return str(BASE.base_url  + link.get('href'))
-def step03_extract_box_scores_by_team(soup_table) :
-    table_body = soup_table.find('tbody')
-    team_name = table_body.find('tr', attrs={'class':'heading'}).find('td').text.strip()
-    column_list = [ col.text.strip() for col in table_body.find_all('tr', attrs={'class':'grey_heading'})[0].find_all('th') ]
-    row_list = [ ele.text.strip() for ele in cols for cols in row.find_all('td') for row in table_body.find_all('tr', attrs={'class':'smtext'})]
-    total = [ col.text.strip() for col in table_body.find_all('tr', attrs={'class':'grey_heading'})[-1].find_all('th') ]
-    return team_name, column_list, row_list
-def step03_extract_box_scores(url) :
-    response = EXTRACT(url, BASE.params, BASE.headers)
-    soap = TRANSFORM(response,features="html.parser")
-    return soup.findAll('table', attrs={'class':'mytable'})
 def step03_transform_box_scores(response) :
     soup = TRANSFORM(response,features="html.parser")
     table_list = soup.findAll('table', attrs={'class':'mytable'})
     return [ step03_transform_table(table) for table in table_list if step03_test(table) ]
 def step03_test(table) :
-    print((len(table),table))
     tr_list = table.findAll('tr', attrs={'class':'grey_heading'})
     td_list_of_list = [ tr.findAll('td') for tr in tr_list ]
     test = []
@@ -50,12 +38,12 @@ def step03_test(table) :
 def step03_transform_table(soup_table) :
     team_name = soup_table.find('tr', attrs={'class':'heading'}).find('td').text.strip()
     grey_header_list = soup_table.findAll('tr', attrs={'class':'grey_heading'})
-
     column_list = [ col.text.strip() for col in grey_header_list[0].findAll('th') ]
     row_list = soup_table.findAll('tr', attrs={'class':'smtext'})
     row_list = step03_transform_rows(row_list)
-    #total = [ col.text.strip() for col in grey_header_list[-1].findAll('td') ]
-    total = step03_transform_rows([grey_header_list[-1]])
+    total = grey_header_list[-1]
+    print(total)
+    total = step03_transform_rows([ total ])
     print((team_name, column_list, row_list,total[0]))
     return team_name, column_list, row_list
 def step03_transform_rows(soup_row_list) :
