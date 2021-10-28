@@ -13,6 +13,7 @@ def step01_request_team_list(sport,**kvargs) :
     return [ EXTRACT(url, BASE.params, BASE.headers) for url in sport.extract_team_list(**kvargs) ]  
 def step02_parse_response(response) :
     link_list = TRANSFORM(response,features="html.parser").findAll('a')
+    return  {k:v for link in link_list for (k,v) in step02_transform(link) if step02_test(link) }
     link_list = [ step02_transform(link) for link in link_list if step02_test(link) ]
     return { key : value for key,value in link_list }
 def step02_test(link) :
@@ -24,6 +25,7 @@ def merge_divisions(*division_list) :
     ret = [ division.items() for division in division_list ]
     print(ret)
     return { k: v for k, v in ret }
+    return {k:v for division in division_list for (k,v) in division.items()}
 def write_csv(filename,team_list) :
     with open(filename,'w') as f:
          f.writelines("team_name\tteam_url\n")
