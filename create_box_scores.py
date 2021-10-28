@@ -38,8 +38,10 @@ def step03_transform_box_scores(response) :
     return [ step03_transform_table(table) for table in table_list if step03_test(table) ]
 def step03_test(table) :
     print((len(table),table))
-    heading = table.findAll('tr', attrs={'class':'grey_heading'})).findAll('td')
-    print (heading)
+    tr_list = table.findAll('tr', attrs={'class':'grey_heading'})
+    print (tr_list)
+    td_list = [ tr.findAll('td') for tr in tr_list ]
+    print (td_list)
     return True
 def step03_transform_table(soup_table) :
     table_body = soup_table.find('tbody')
