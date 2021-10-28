@@ -28,4 +28,4 @@ jobs:
            python testScrapperSettings.py
            cat ../log/testScrapperSettings.log
            python testTeamMapping.py
-           cat ../log/testTeamMapping.py.log
+           cat ../log/testTeamMapping.log
