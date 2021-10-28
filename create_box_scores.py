@@ -37,7 +37,7 @@ def step03_transform_box_scores(response) :
     table_list = soup.findAll('table', attrs={'class':'mytable'})
     return [ step03_transform_table(table) for table in table_list if step03_test(table) ]
 def step03_test(table) :
-    print((len(table),table))
+    print((len(table),table[:450]))
     tr_list = table.findAll('tr', attrs={'class':'grey_heading'})
     td_list_of_list = [ tr.findAll('td') for tr in tr_list ]
     test = []
@@ -50,10 +50,16 @@ def step03_test(table) :
 def step03_transform_table(soup_table) :
     team_name = soup_table.find('tr', attrs={'class':'heading'}).find('td').text.strip()
     column_list = [ col.text.strip() for col in soup_table.findAll('tr', attrs={'class':'grey_heading'})[0].find_all('th') ]
-    row_list = [ ele.text.strip() for ele in cols for cols in row.findAll('td') for row in soup_table.find_all('tr', attrs={'class':'smtext'})]
+    print((team_name,column_list))
+    row_list = soup_table.findAll('tr', attrs={'class':'smtext'})
+    td_list = [ tr.findAll('td') for tr in row_list ]
+    row_values_list = []
+    for row in td_list :
+        row_values_list.append([ ele.text.strip() for ele in row ])
+    print(row_values_list)
     total = [ col.text.strip() for col in table_body.findAll('tr', attrs={'class':'grey_heading'})[-1].find_all('th') ]
-    print((team_name, column_list, row_list))
-    return team_name, column_list, row_list
+    print((team_name, column_list, row_values_list))
+    return team_name, column_list, row_values_list
     
 def by_sport(filename) :
     team_url_list = step01_read_team_list(filename).values()
