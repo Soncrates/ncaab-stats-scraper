@@ -1,10 +1,7 @@
 #!/usr/bin/python
 ##############################################################
-# Program name: NCAA Basketball Stats Scraper (Functions Module)
+# Program name: NCAA Stats Scraper (Functions Module)
 # Version: 1.0
-# By: Rodrigo Zamith
-# License: MPL 2.0 (see LICENSE file in root folder)
-# Additional thanks: 
 ##############################################################
 
 try:
@@ -14,7 +11,12 @@ except:
     cookielib = http.cookiejar
 
 import urllib
-import urllib2
+try:
+    # For Python 3.0 and later
+    from urllib.request import urlopen
+except ImportError:
+    # Fall back to Python 2's urllib2
+    from urllib2 import urlopen
 import re
 import scrapersettings
 
