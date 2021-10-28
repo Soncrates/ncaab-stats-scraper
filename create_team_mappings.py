@@ -20,7 +20,7 @@ def step02_test(link) :
 def step02_transform(link) :
     return str(link.get_text()),  str(BASE.base_url  + link.get('href'))
 def team_list_by_sport(*url_by_division_list) :
-    team_list_by_division_response_list = [ POST(url, BASE.params.encode('encoding'), BASE.headers) for url in url_by_division_list]  
+    team_list_by_division_response_list = [ POST(url, BASE.params, BASE.headers) for url in url_by_division_list]  
     ret = [ step02_parse_response(team_list) for team_list in team_list_by_division_response_list ]
     return { k: v for k, v in team_list.items() for team_list in ret }
 def write_csv(filename,team_list) :
