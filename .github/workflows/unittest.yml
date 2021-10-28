@@ -23,6 +23,7 @@ jobs:
       - name: Run tests 
         run: |
            pwd
+           ls -la
            cd test
            ls -la
            python testScrapperSettings.py
