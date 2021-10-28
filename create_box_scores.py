@@ -52,14 +52,19 @@ def step03_transform_table(soup_table) :
     column_list = [ col.text.strip() for col in soup_table.findAll('tr', attrs={'class':'grey_heading'})[0].find_all('th') ]
     print((team_name,column_list))
     row_list = soup_table.findAll('tr', attrs={'class':'smtext'})
-    td_list = [ tr.findAll('td') for tr in row_list ]
-    row_values_list = []
-    for row in td_list :
-        row_values_list.append([ ele.text.strip() for ele in row ])
-    print(row_values_list)
+    row_list = step03_transform_rows(row_list)
+    print(row_list)
+    total = soup_table.findAll('tr', attrs={'class':'grey_heading'})
+    print(total)
     total = [ col.text.strip() for col in table_body.findAll('tr', attrs={'class':'grey_heading'})[-1].find_all('th') ]
-    print((team_name, column_list, row_values_list))
-    return team_name, column_list, row_values_list
+    print((team_name, column_list, row_list))
+    return team_name, column_list, row_list
+def step03_transform_rows(soup_row_list) :
+    td_list = [ tr.findAll('td') for tr in soup_row_list ]
+    ret = []
+    for row in td_list :
+        ret.append([ ele.text.strip() for ele in row ])
+    return ret
     
 def by_sport(filename) :
     team_url_list = step01_read_team_list(filename).values()
