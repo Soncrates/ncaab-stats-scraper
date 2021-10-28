@@ -45,7 +45,7 @@ def get_team_mappings():
     team_map = dict([(var.split("\t")[0], (var.split("\t")[1], var.split("\t")[2].strip("\n"))) for var in team_map])
     return(team_map)
 
-def get_game_mappings()
+def get_game_mappings() :
     game_map = open(scrapersettings.schedule_mappingfile, "rb")
     game_map = game_map.readlines()[1:]
     game_map = dict([(var.split("\t")[0], (var.split("\t")[1], var.split("\t")[2], var.split("\t")[3], var.split("\t")[4], var.split("\t")[5].strip("\n"))) for var in game_map])
