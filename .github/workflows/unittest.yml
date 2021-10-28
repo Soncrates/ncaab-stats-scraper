@@ -26,3 +26,4 @@ jobs:
            cd test
            ls -la
            python testScrapperSettings.py
+           cat ../log/testScrapperSettings.log
