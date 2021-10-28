@@ -10,7 +10,7 @@ import logging as log
 class TestScraperFunctions(unittest.TestCase) :
     def setUp(self) : pass
     def testLacrosseStep01(self) :
-        obj = TEST.team_list_by_sport(Lacrosse().url_team_list())
+        obj = TEST.team_list_by_sport(*Lacrosse().url_team_list())
         log.debug(obj)
 
 if __name__ == '__main__' :
