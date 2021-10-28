@@ -6,7 +6,7 @@
 try:
     # For Python 3.0 and later
     import http.cookiejar as cookielib
-    from urllib.request import urlopen, URLError, HTTPCookieProcessor, build_opener, request as POST
+    from urllib.request import urlopen, URLError, HTTPCookieProcessor, build_opener, Request as POST
     from urllib.parse import urlencode
 except ImportError:
     # Fall back to Python 2's urllib2
