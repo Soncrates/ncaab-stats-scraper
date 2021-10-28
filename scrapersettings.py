@@ -7,6 +7,8 @@
 #start_url = 'http://stats.ncaa.org/team/inst_team_list?sport_code=MBB&academic_year=' + str(academic_year) + "&division=1" 
 #domain_base = 'http://stats.ncaa.org' # Base domain
 
+from copy import deepcopy
+
 class SportExtract() :
             base_url = 'http://stats.ncaa.org'
             headers = {"Content-Type": "application/x-www-form-urlencoded; charset=UTF-8"}
@@ -18,13 +20,13 @@ class SportExtract() :
 
             @staticmethod
             def convert_params(default_args, kvargs) :
-                ret = copy.deepcopy(default_args)
+                ret = deepcopy(default_args)
                 ret.update(kvargs)
                 ret = "&".join([ "{}={}".format(key,value) for key, value in ret.items()])
                 return "{}/team/inst_team_list?{}".format(Base_Sport.base_url,ret)
             @staticmethod
             def parse(**kvargs) :
-                ret = copy.deeecopy(SportExtract.default_params)
+                ret = deeecopy(SportExtract.default_params)
                 ret.update(kvargs)
                 ret.update({ key : int(value) for key, value in ret.items() in key in ["conf_id","division","academic_year"] })
                 return ret
