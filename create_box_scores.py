@@ -16,7 +16,7 @@ def step01_read_team_list(filename):
 def step02_extract_team_data(*team_list):
     return [ EXTRACT(url, BASE.params, BASE.headers) for url in team_list ]
 def step02_parse_response_for_box_scores(response) :
-    link_list = TRANSFORM(response).findAll('a')
+    link_list = TRANSFORM(response,features="html.parser").findAll('a')
     return [ step02_transform(link) for link in link_list if step02_test(link) ]
 def step02_test(link) :
     return link.get('href').endswith('box_score')
@@ -31,8 +31,8 @@ def step03_extract_box_scores_by_team(soup_table) :
     return team_name, column_list, row_list
 def step03_extract_box_scores(url) :
     response = EXTRACT(url, BASE.params, BASE.headers)
-    soap = BeautifulSoup(response)
-    return soup.find_all('table', attrs={'class':'mytable'})
+    soap = TRANSFORM(response,features="html.parser")
+    return soup.findAll('table', attrs={'class':'mytable'})
 def by_sport(filename) :
     team_url_list = step01_read_team_list(filename).values()
     box_scores = [ step02_parse_response_for_box_scores(response) for response in step02_extract_team_data(*team_url_list) ]
