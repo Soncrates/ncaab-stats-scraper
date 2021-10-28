@@ -19,10 +19,10 @@ def step02_test(link) :
     return link.get('href').startswith('/team/')
 def step02_transform(link) :
     return str(link.get_text()),  str(BASE.base_url  + link.get('href'))
-def team_list_by_sport(sport) :
-    team_list_by_division_list = step01_request_team_list(sport)
-    team_list_by_division_list = [ step02_parse_response(team_list) for team_list in team_list_by_division_list ]
-    return { k: v for k, v in team_list.items() for team_list in team_list_by_division_list }
+def team_list_by_sport(*url_by_division_list) :
+    team_list_by_division_response_list = [ POST(url, BASE.params, BASE.headers) for url in url_by_division_list]  
+    ret = [ step02_parse_response(team_list) for team_list in team_list_by_division_response_list ]
+    return { k: v for k, v in team_list.items() for team_list in ret }
 def write_csv(filename,team_list) :
     with open(filename,'w') as f:
          f.writelines("team_name\tteam_url\n"
@@ -30,7 +30,7 @@ def write_csv(filename,team_list) :
              f.writelines("{}\t{}\n".format(name,url))
 def main() :
     sport_list = [Lacrosse(),Football(),Basketball(),Soccer()]
-    sport_list = { "{sport_code}.csv".format(**sport.default_params) : team_list_by_sport(sport) for sport in sport_list }
+    sport_list = { "{sport_code}.csv".format(**sport.default_params) : team_list_by_sport(*sport.extract_team_list(**kvargs)) for sport in sport_list }
     for filename, team_list in sport_list.items() :
         write_csv(filename, team_list)
 
