@@ -43,8 +43,10 @@ def step03_test(table) :
     test = []
     for td_list in td_list_of_list :
         test.extend(td_list)
-    td_list = [ td.text.strip() for td in td_list ]
+    td_list = [ td.text.strip() for td in td_list if td.text.strip() in ['1st Quarter', '2nd Quarter', '3rd Quarter', '4th Quarter'] ]
     print (td_list)
+    if len(td_list) > 0 :
+        return False
     return True
 def step03_transform_table(soup_table) :
     table_body = soup_table.find('tbody')
