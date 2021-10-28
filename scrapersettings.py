@@ -35,7 +35,7 @@ class Lacrosse() :
                               }]
             @classmethod
             def url_team_list(cls,**kvargs) :
-                kvargs = SportExtract.parse(kvargs)
+                kvargs = SportExtract.parse(**kvargs)
                 return [ SportExtract.convert_params(params,kvargs) for params in cls.default_params ]
 class Basketball() :
             default_params = [{ "sport_code" : "MBB",
@@ -43,7 +43,7 @@ class Basketball() :
                               }]
             @classmethod
             def url_team_list(cls,**kvargs) :
-                kvargs = SportExtract.parse(kvargs)
+                kvargs = SportExtract.parse(**kvargs)
                 return [ SportExtract.convert_params(params,kvargs) for params in cls.default_params ]
 class FootBall() :
             default_params = [{ "sport_code" : "MFB",
@@ -51,7 +51,7 @@ class FootBall() :
                               }]
             @classmethod
             def url_team_list(cls,**kvargs) :
-                kvargs = SportExtract.parse(kvargs)
+                kvargs = SportExtract.parse(**kvargs)
                 return [ SportExtract.convert_params(params,kvargs) for params in cls.default_params ]
 class Soccer() :
             default_params = [{ "sport_code" : "MSO",
@@ -59,5 +59,5 @@ class Soccer() :
                               }]
             @classmethod
             def url_team_list(cls,**kvargs) :
-                kvargs = SportExtract.parse(kvargs)
+                kvargs = SportExtract.parse(**kvargs)
                 return [ SportExtract.convert_params(params,kvargs) for params in cls.default_params ]
