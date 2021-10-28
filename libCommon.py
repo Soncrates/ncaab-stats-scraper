@@ -14,7 +14,7 @@ try :
       from ConfigParser import RawConfigParser as CF
 except :
     print_exc()
-if sys.version_info < (3, 0):
+if version_info < (3, 0):
    import ConfigParser
 else:
     import configparser as ConfigParser
