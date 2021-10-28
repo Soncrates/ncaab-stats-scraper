@@ -21,7 +21,8 @@ class TestScraperFunctions(unittest.TestCase) :
         log.debug(obj)
     def testLacrosseStep02(self) :
         obj = [ TEST.step02_parse_response(team_list) for team_list in [self.team_list_MLA] ]
-        log.debug(obj)
+        obj = TEST.merge_divisions(*obj)
+        log.debug(COMMON.pretty_print(obj))
 
 if __name__ == '__main__' :
    import sys
