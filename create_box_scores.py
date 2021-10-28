@@ -38,8 +38,8 @@ def by_sport(filename) :
     box_scores = [ step02_parse_response_for_box_scores(response) for response in step02_extract_team_data(*team_url_list) ]
     box_score_list = [ step03_extract_box_scores_by_team(table) for table in table_list for table_list in step03_extract_box_scores(url) for url in list(set(box_scores)) ]
         
-def main() :
-    for sport in glob("team_list*csv") :
-         by_sport(sport)
+def main(*sport_list) :
+    ret  = [ by_sport(sport) for sport in sport_list]
 if __name__ == "__main__" :
-   main()
+   sport_list = COMMON.find_files("team_list*csv")
+   main(*sport_list)
