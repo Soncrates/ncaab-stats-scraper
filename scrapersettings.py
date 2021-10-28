@@ -18,15 +18,14 @@ class SportExtract() :
                                 "academic_year" : 2021
                               }
             @staticmethod
-            def convert_params(default_args, kvargs) :
-                ret = deepcopy(default_args)
+            def convert_params(params,kvargs) :
+                ret = deepcopy(SportExtract.default_params)
+                ret.update(params)
                 ret.update(kvargs)
                 ret = "&".join([ "{}={}".format(key,value) for key, value in ret.items()])
                 return "{}/team/inst_team_list?{}".format(SportExtract.base_url,ret)
             @staticmethod
-            def parse(**kvargs) :
-                ret = deepcopy(SportExtract.default_params)
-                ret.update(kvargs)
+            def parse(**ret) :
                 ret.update({ key : int(value) for key, value in ret.items() if key in ["conf_id","division","academic_year"] })
                 return ret
 
