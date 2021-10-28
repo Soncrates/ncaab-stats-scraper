@@ -44,15 +44,13 @@ def step03_test(table) :
     for td_list in td_list_of_list :
         test.extend(td_list)
     td_list = [ td.text.strip() for td in td_list if td.text.strip() in ['1st Quarter', '2nd Quarter', '3rd Quarter', '4th Quarter'] ]
-    print (td_list)
     if len(td_list) > 0 :
         return False
     return True
 def step03_transform_table(soup_table) :
-    table_body = soup_table.find('tbody')
-    team_name = table_body.find('tr', attrs={'class':'heading'}).find('td').text.strip()
-    column_list = [ col.text.strip() for col in table_body.findAll('tr', attrs={'class':'grey_heading'})[0].find_all('th') ]
-    row_list = [ ele.text.strip() for ele in cols for cols in row.findAll('td') for row in table_body.find_all('tr', attrs={'class':'smtext'})]
+    team_name = soup_table.find('tr', attrs={'class':'heading'}).find('td').text.strip()
+    column_list = [ col.text.strip() for col in soup_table.findAll('tr', attrs={'class':'grey_heading'})[0].find_all('th') ]
+    row_list = [ ele.text.strip() for ele in cols for cols in row.findAll('td') for row in soup_table.find_all('tr', attrs={'class':'smtext'})]
     total = [ col.text.strip() for col in table_body.findAll('tr', attrs={'class':'grey_heading'})[-1].find_all('th') ]
     print((team_name, column_list, row_list))
     return team_name, column_list, row_list
