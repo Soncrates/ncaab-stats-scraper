@@ -75,9 +75,9 @@ def transform_obj(obj) :
     return { key : transform_object(getattr(obj,key))  for key in prop_list }
 def build_args(*largs) :
     return "".join( [ str(arg).strip(' ') for arg in largs if is_str(arg) ] )
-def build_command(*largs) :
-    return "/".join( [ str(arg).strip('/') for arg in largs if is_str(arg) ] )
 def build_path(*largs) :
+    return "/".join( [ str(arg).strip('/') for arg in largs if is_str(arg) ] )
+def build_command(*largs) :
     return " ".join( [ str(arg).strip(' ') for arg in largs if is_str(arg) ] )
 def is_str(arg) :
     if arg is None : return False
