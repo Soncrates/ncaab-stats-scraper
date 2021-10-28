@@ -37,13 +37,11 @@ def step03_transform_box_scores(response) :
     table_list = soup.findAll('table', attrs={'class':'mytable'})
     return [ step03_transform_table(table) for table in table_list if step03_test(table) ]
 def step03_test(table) :
+    print(table)
     return True
 def step03_transform_table(soup_table) :
     table_body = soup_table.find('tbody')
-    print(table_body)
     team_name = table_body.find('tr', attrs={'class':'heading'}).find('td').text.strip()
-    print(team_name)
-    print(table_body)
     column_list = [ col.text.strip() for col in table_body.findAll('tr', attrs={'class':'grey_heading'})[0].find_all('th') ]
     row_list = [ ele.text.strip() for ele in cols for cols in row.findAll('td') for row in table_body.find_all('tr', attrs={'class':'smtext'})]
     total = [ col.text.strip() for col in table_body.findAll('tr', attrs={'class':'grey_heading'})[-1].find_all('th') ]
