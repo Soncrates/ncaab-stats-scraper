@@ -14,10 +14,17 @@ def load_response(filename) :
          return "".join(fp.readlines())
 class TestScrapeBoxScore(unittest.TestCase) :
     team_MLA_Navy = None
+    team_MLA_Navy_BoxSCore = None
     def setUp(self) : 
         self.team_MLA_Navy = load_response("./test_input/team_MLA_Navy.html")
+        self.team_MLA_Navy_BoxSCore = load_response("./test_input/team_MLA_BoxScore.html")
+        
     def testLacrosseStep02(self) :
         obj = [ TEST.step02_parse_response_for_box_scores(team_list) for team_list in [self.team_MLA_Navy] ]
+        log.debug(COMMON.pretty_print(obj))
+        log.debug(sorted(obj))
+    def testLacrosseStep03(self) :
+        obj = [ TEST.step03_transform_box_scores(team_list) for team_list in [self.team_MLA_Navy_BoxSCore] ]
         log.debug(COMMON.pretty_print(obj))
         log.debug(sorted(obj))
 
