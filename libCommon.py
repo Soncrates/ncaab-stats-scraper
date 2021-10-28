@@ -20,8 +20,8 @@ if version_info < (3, 0):
 else:
     import configparser as ConfigParser
       
-LOG_FORMAT_TEST = '%(levelname)s [%(module)s.%(funcName):%(lineno)d] %(message)s'
-LOG_FORMAT_APP = '[%(asctime)] %(levelname)s [%(module)s.%(funcName):%(lineno)d] %(message)s'
+LOG_FORMAT_TEST = '%(levelname)s [%(module)s.%(funcName)s:%(lineno)d] %(message)s'
+LOG_FORMAT_APP = '[%(asctime)] %(levelname)s [%(module)s.%(funcName)s:%(lineno)d] %(message)s'
 LOG_FORMAT_DATE = "%Y%m%dT%"
 LOG = logging.getLogger(__name__) 
 
