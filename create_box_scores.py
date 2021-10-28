@@ -15,8 +15,8 @@ def step01_read_team_list(filename):
          return { var[0] : var[1] for var in team_list }
 def step02_extract_team_data(*team_list):
     return [ EXTRACT(url, BASE.params, BASE.headers) for url in team_list ]
-def step02_parse_response_for_box_scores(team_response) :
-    link_list = TRANSFORM(teamlist_response).findAll('a')
+def step02_parse_response_for_box_scores(response) :
+    link_list = TRANSFORM(response).findAll('a')
     return [ step02_transform(link) for link in link_list if step02_test(link) ]
 def step02_test(link) :
     return link.get('href').endswith('box_score')
