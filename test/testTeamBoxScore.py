@@ -25,7 +25,7 @@ class TestScrapeBoxScore(unittest.TestCase) :
         log.debug(sorted(obj))
     def testLacrosseStep03(self) :
         obj = [ TEST.step03_transform_box_scores(team_list) for team_list in [self.team_MLA_Navy_BoxSCore] ]
-        obj = {k:v for score in obj for k,v in score.items() }
+        #obj= {k:v for score in obj for k,v in score.items() }
         log.debug(obj)
 
 if __name__ == '__main__' :
