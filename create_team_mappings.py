@@ -22,6 +22,7 @@ def step02_transform(link) :
     return str(link.get_text()),  str(BASE.base_url  + link.get('href'))
 def merge_divisions(*division_list) :
     ret = [ division.items() for division in division_list ]
+    print(ret)
     return { k: v for k, v in ret }
 def write_csv(filename,team_list) :
     with open(filename,'w') as f:
