@@ -37,7 +37,7 @@ def step03_transform_box_scores(response) :
     table_list = soup.findAll('table', attrs={'class':'mytable'})
     return [ step03_transform_table(table) for table in table_list if step03_test(table) ]
 def step03_test(table) :
-    print((len(table),table[:450]))
+    print((len(table),table))
     tr_list = table.findAll('tr', attrs={'class':'grey_heading'})
     td_list_of_list = [ tr.findAll('td') for tr in tr_list ]
     test = []
