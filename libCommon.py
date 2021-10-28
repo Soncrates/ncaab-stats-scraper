@@ -50,6 +50,10 @@ def is_environ(arg) :
     return False  
 def pretty_print(obj) :
     _xx = transform_obj(obj)
+    if isinstance(_xx,(float, int, str, tuple)) : 
+        return _xx
+    if isinstance(_xx,(list)) : 
+        return dumps( _xx , indent=3, sort_keys=True)
     _yy = { key : _xx[key] for key in _xx if not is_json_enabled(_xx[key]) }
 
     ret = { key : _xx[key] for key in _xx if is_json_enabled(_xx[key]) }
