@@ -13,17 +13,16 @@ except:
 import urllib
 try:
     # For Python 3.0 and later
-    from urllib.request import urlopen, URLError
+    from urllib.request import urlopen, URLError, HTTPCookieProcessor, build_opener
 except ImportError:
     # Fall back to Python 2's urllib2
-    from urllib2 import urlopen, URLError
+    from urllib2 import urlopen, URLError, HTTPCookieProcessor, build_opener
 import re
 import scrapersettings
 
 ### Retry Decorator code taken from the SaltyCrane Blog (http://www.saltycrane.com/blog/2009/11/trying-out-retry-decorator-python/)
 import time
 from functools import wraps
-
 
 def retry(ExceptionToCheck, tries=4, delay=3, backoff=2, logger=None):
     """Retry calling the decorated function using an exponential backoff.
@@ -67,26 +66,20 @@ def retry(ExceptionToCheck, tries=4, delay=3, backoff=2, logger=None):
 
     return deco_retry
 
-
-
 ### Define our functions
 def create_cookie():
     # Create a cookie handler, if necessary
     cookie_jar = cookielib.LWPCookieJar()
-    cookie = urllib2.HTTPCookieProcessor(cookie_jar)
+    cookie = HTTPCookieProcessor(cookie_jar)
     
-    # Create an urllib2 opener() using our cookie jar
-    opencookies = urllib2.build_opener(cookie)
+    opencookies = build_opener(cookie)
     return(opencookies)
 
 @retry(URLError, tries=4, delay=3, backoff=2)
 def grabber(url, params, http_header):
-    # Create a cookie jar
     cookiejar = create_cookie()
-    # Create the HTTP request
     req = urlopen.Request(url, urllib.urlencode(params), http_header)
     
-    # Submit the request
     res = cookiejar.open(req)
     data = res.read()
     return(data)
