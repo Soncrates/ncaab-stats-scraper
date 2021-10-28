@@ -27,5 +27,5 @@ jobs:
            ls -la
            python testScrapperSettings.py
            cat ../log/testScrapperSettings.log
-           python testTeamMapping.py.py
+           python testTeamMapping.py
            cat ../log/testTeamMapping.py.log
