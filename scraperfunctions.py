@@ -80,7 +80,7 @@ def create_cookie():
 @retry(URLError, tries=4, delay=3, backoff=2)
 def grabber(url, params, http_header):
     cookiejar = create_cookie()
-    req = urlopen(url, urlencode(params).encode('encoding'), http_header)
+    req = urlopen(url, urlencode(params).encode('utf-8'), http_header)
     
     res = cookiejar.open(req)
     data = res.read()
