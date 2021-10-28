@@ -5,15 +5,14 @@
 ##############################################################
 
 # Import modules and libraries
-from scraperfunctions import grabber as POST
+from scraperfunctions import grabber as EXTRACT
 from scrapersettings import Lacrosse, Football, Basketball, Soccer, SportExtract as BASE
-from bs4 import BeautifulSoup as PARSER
+from bs4 import BeautifulSoup as TRANSFORM
 
 def step01_request_team_list(sport,**kvargs) :
-    url_by_division_list = sport.extract_team_list(**kvargs)
-    return [ POST(url, BASE.params, BASE.headers) for url in url_by_division_list]  
+    return [ EXTRACT(url, BASE.params, BASE.headers) for url in sport.extract_team_list(**kvargs) ]  
 def step02_parse_response(response) :
-    link_list = PARSER(teamlist_response,features="html.parser").findAll('a')
+    link_list = TRANSFORM(response,features="html.parser").findAll('a')
     print(link_list)
     return { key : value for key, value in step02_transform(link) for link in link_list if step02_test(link) }
 def step02_test(link) :
@@ -31,7 +30,9 @@ def write_csv(filename,team_list) :
              f.writelines("{}\t{}\n".format(name,url))
 def main() :
     sport_list = [Lacrosse(),Football(),Basketball(),Soccer()]
-    sport_list = { "{sport_code}.csv".format(**sport.default_params) : team_list_by_sport(*sport.extract_team_list(**kvargs)) for sport in sport_list }
+    team_list = [ step01_request_team_list(sport) for sport in sport_list ]
+
+    sport_list = { "team_list_{sport_code}.csv".format(**sport.default_params) : step01_request_team_list(sport) for sport in sport_list }
     for filename, team_list in sport_list.items() :
         write_csv(filename, team_list)
 
