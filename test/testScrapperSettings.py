@@ -7,8 +7,7 @@ import unittest
 import logging as log
 
 class TestScraperSettings(unittest.TestCase) :
-    def setUp(self) : 
-        COMMON.mkdir("../log")
+    def setUp(self) : pass
     def testLacrosse(self) :
         sport = TEST.Lacrosse()
         log.debug(sport.url_team_list())
@@ -27,6 +26,7 @@ if __name__ == '__main__' :
    log_file = COMMON.build_args(*sys.argv).replace('.py','') + '.log'
    log_file = COMMON.build_path('../log',log_file)
    COMMON.remove_file(log_file)
+   COMMON.mkdir("../log")
    print(log_file)
    log.basicConfig(filename=log_file, format=COMMON.LOG_FORMAT_TEST, level=log.DEBUG)
    #log.basicConfig(stream = sys.stdout, format=COMMON.LOG_FORMAT_TEST, level=log.DEBUG)
