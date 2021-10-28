@@ -29,3 +29,5 @@ jobs:
            cat ../log/testScrapperSettings.log
            python testTeamMapping.py
            cat ../log/testTeamMapping.log
+           python testTeamBoxScore.py
+           cat ../log/testTeamBoxScore.log
