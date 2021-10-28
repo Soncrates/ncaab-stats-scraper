@@ -43,7 +43,7 @@ def step03_transform_table(soup_table) :
     row_list = soup_table.findAll('tr', attrs={'class':'smtext'})
     row_list = step03_transform_rows(row_list)
     total = grey_header_list[-1]
-    row_list.append(step03_transform_rows([ total ][0]))
+    row_list.extend(step03_transform_rows([ total ]))
     ret = PY.DataFrame(row_list,columns=column_list)
     return { team_name : ret }
 def step03_transform_rows(soup_row_list) :
