@@ -8,9 +8,16 @@ import unittest
 import logging as log
 
 class TestScraperFunctions(unittest.TestCase) :
-    def setUp(self) : pass
-    def testLacrosseStep01(self) :
+    team_list_MLA = None
+    def setUp(self) : 
+        self.team_list_MLA = COMMON.find_files("./test_input/team_list_MLA.html")
+        with open(self.team_list_MLA[0]) as fp :
+            self.team_list_MLA = fp.readlines()
+    def dep_testLacrosseStep01(self) :
         obj = TEST.team_list_by_sport(*Lacrosse().url_team_list())
+        log.debug(obj)
+    def testLacrosseStep02(self) :
+        obj = [ TEST.step02_parse_response(team_list) for team_list in [self.team_list_MLA] ]
         log.debug(obj)
 
 if __name__ == '__main__' :
