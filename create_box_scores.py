@@ -34,7 +34,7 @@ def step03_extract_box_scores(url) :
     soap = TRANSFORM(response,features="html.parser")
     return soup.findAll('table', attrs={'class':'mytable'})
 def step03_transform_box_scores(response) :
-    soap = TRANSFORM(response,features="html.parser")
+    soup = TRANSFORM(response,features="html.parser")
     table_list = soup.findAll('table', attrs={'class':'mytable'})
     print(table_list)
     return [ step03_transform_table(table) for table in table_list is step03_test(table) ]
