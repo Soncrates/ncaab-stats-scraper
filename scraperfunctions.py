@@ -14,6 +14,7 @@ import urllib
 try:
     # For Python 3.0 and later
     from urllib.request import urlopen, URLError, HTTPCookieProcessor, build_opener
+    from urllib import urlencode
 except ImportError:
     # Fall back to Python 2's urllib2
     from urllib2 import urlopen, URLError, HTTPCookieProcessor, build_opener
@@ -78,7 +79,7 @@ def create_cookie():
 @retry(URLError, tries=4, delay=3, backoff=2)
 def grabber(url, params, http_header):
     cookiejar = create_cookie()
-    req = urlopen.Request(url, urllib.urlencode(params), http_header)
+    req = urlopen(url, urlencode(params), http_header)
     
     res = cookiejar.open(req)
     data = res.read()
