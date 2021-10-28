@@ -26,7 +26,7 @@ class SportExtract() :
                 return "{}/team/inst_team_list?{}".format(Base_Sport.base_url,ret)
             @staticmethod
             def parse(**kvargs) :
-                ret = deeecopy(SportExtract.default_params)
+                ret = deepcopy(SportExtract.default_params)
                 ret.update(kvargs)
                 ret.update({ key : int(value) for key, value in ret.items() in key in ["conf_id","division","academic_year"] })
                 return ret
