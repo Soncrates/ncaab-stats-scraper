@@ -39,7 +39,10 @@ def step03_transform_box_scores(response) :
 def step03_test(table) :
     print((len(table),table))
     tr_list = table.findAll('tr', attrs={'class':'grey_heading'})
-    td_list = [ tr.findAll('td') for tr in tr_list ]
+    td_list_of_list = [ tr.findAll('td') for tr in tr_list ]
+    test = []
+    for td_list in td_list_of_list :
+        test.extend(td_list)
     td_list = [ td.text.strip() for td in td_list ]
     print (td_list)
     return True
