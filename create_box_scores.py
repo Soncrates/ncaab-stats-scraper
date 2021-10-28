@@ -4,9 +4,9 @@
 # Version: 1.0
 ##############################################################
 from glob import glob
-from scraperfunctions import grabber as POST
+from scraperfunctions import grabber as EXTRACT
 from scrapersettings import SportExtract as BASE
-from bs4 import BeautifulSoup
+from bs4 import BeautifulSoup as TRANSFORM
 
 def step01_read_team_list(filename):
     with open(filename, "rb") as f :
@@ -14,9 +14,9 @@ def step01_read_team_list(filename):
          team_list = [ team.split("\t") for team in team_list ]
          return { var[0] : var[1] for var in team_list }
 def step02_extract_team_data(*team_list):
-    return [ POST(url, BASE.params, BASE.headers) for url in team_list ]
+    return [ EXTRACT(url, BASE.params, BASE.headers) for url in team_list ]
 def step02_parse_response_for_box_scores(team_response) :
-    link_list = BeautifulSoup(teamlist_response).find_all('a')
+    link_list = TRANSFORM(teamlist_response).findAll('a')
     return [ step02_transform(link) for link in link_list if step02_test(link) ]
 def step02_test(link) :
     return link.get('href').endswith('box_score')
@@ -30,7 +30,7 @@ def step03_extract_box_scores_by_team(soup_table) :
     total = [ col.text.strip() for col in table_body.find_all('tr', attrs={'class':'grey_heading'})[-1].find_all('th') ]
     return team_name, column_list, row_list
 def step03_extract_box_scores(url) :
-    response = POST(url, BASE.params, BASE.headers)
+    response = EXTRACT(url, BASE.params, BASE.headers)
     soap = BeautifulSoup(response)
     return soup.find_all('table', attrs={'class':'mytable'})
 def by_sport(filename) :
@@ -39,7 +39,7 @@ def by_sport(filename) :
     box_score_list = [ step03_extract_box_scores_by_team(table) for table in table_list for table_list in step03_extract_box_scores(url) for url in list(set(box_scores)) ]
         
 def main() :
-    for sport in glob("*csv") :
-         by_sport(sport) :
+    for sport in glob("team_list*csv") :
+         by_sport(sport)
 if __name__ == "__main__" :
    main()
