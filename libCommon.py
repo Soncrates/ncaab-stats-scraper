@@ -3,7 +3,7 @@ from glob import glob
 from json import dumps, load, loads
 from os import path, environ, remove, stat, mkdir as MKDIR
 import pandas as PD
-from sys import version_info, arg
+from sys import version_info
 from time import time, sleep
 from traceback import print_exc
 
