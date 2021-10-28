@@ -23,7 +23,7 @@ class TestFILL_IN_THE_BLANK(unittest.TestCase) :
         log.debug(sport.url_team_list())
 
 if __name__ == '__main__' :
-   log_file = COMMON.build_arg(*sys.argv).replace('.py','') + '.log'
+   log_file = COMMON.build_args(*sys.argv).replace('.py','') + '.log'
    log_file = COMMON.build_path('../log',log_file)
    COMMON.remove_file(log_file)
    log.basicConfig(filename=log_file, format=COMMON.LOG_FORMAT_TEST, level=log.DEBUG)
