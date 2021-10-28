@@ -37,7 +37,7 @@ def step03_transform_box_scores(response) :
     table_list = soup.findAll('table', attrs={'class':'mytable'})
     return [ step03_transform_table(table) for table in table_list if step03_test(table) ]
 def step03_test(table) :
-    print(table)
+    print((len(table),table))
     return True
 def step03_transform_table(soup_table) :
     table_body = soup_table.find('tbody')
