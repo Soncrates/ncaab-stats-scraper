@@ -7,7 +7,12 @@
 # Additional thanks: 
 ##############################################################
 
-import cookielib
+try:
+    import cookielib
+except:
+    import http.cookiejar
+    cookielib = http.cookiejar
+
 import urllib
 import urllib2
 import re
