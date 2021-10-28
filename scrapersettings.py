@@ -28,7 +28,7 @@ class SportExtract() :
             def parse(**kvargs) :
                 ret = deepcopy(SportExtract.default_params)
                 ret.update(kvargs)
-                ret.update({ key : int(value) for key, value in ret.items() in key in ["conf_id","division","academic_year"] })
+                ret.update({ key : int(value) for key, value in ret.items() if key in ["conf_id","division","academic_year"] })
                 return ret
 
 class Lacrosse() :
