@@ -49,15 +49,14 @@ def step03_test(table) :
     return True
 def step03_transform_table(soup_table) :
     team_name = soup_table.find('tr', attrs={'class':'heading'}).find('td').text.strip()
-    column_list = [ col.text.strip() for col in soup_table.findAll('tr', attrs={'class':'grey_heading'})[0].find_all('th') ]
-    print((team_name,column_list))
+    grey_header_list = soup_table.findAll('tr', attrs={'class':'grey_heading'})
+
+    column_list = [ col.text.strip() for col in grey_header_list[0].findAll('th') ]
     row_list = soup_table.findAll('tr', attrs={'class':'smtext'})
     row_list = step03_transform_rows(row_list)
-    print(row_list)
-    total = soup_table.findAll('tr', attrs={'class':'grey_heading'})
-    print(total)
-    total = [ col.text.strip() for col in table_body.findAll('tr', attrs={'class':'grey_heading'})[-1].find_all('th') ]
-    print((team_name, column_list, row_list))
+    #total = [ col.text.strip() for col in grey_header_list[-1].findAll('td') ]
+    total = step03_transform_rows([grey_header_list[-1]])
+    print((team_name, column_list, row_list,total[0]))
     return team_name, column_list, row_list
 def step03_transform_rows(soup_row_list) :
     td_list = [ tr.findAll('td') for tr in soup_row_list ]
