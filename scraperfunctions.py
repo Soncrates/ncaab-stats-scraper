@@ -4,6 +4,7 @@
 # Version: 1.0
 ##############################################################
 import logging
+import requests
 try:
     # For Python 3.0 and later
     import http.cookiejar as cookielib
@@ -33,3 +34,7 @@ def grabber(url, params, http_header):
     #res = create_cookie().open(req)
     #data = res.read()
     return data.decode("utf-8")
+@retry(URLError, tries=4, delay=3, backoff=2)
+def grabber(url, params, http_header):
+    r = requests.get(url,http_header)
+    return r.text
