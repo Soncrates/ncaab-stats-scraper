@@ -3,7 +3,7 @@
 # Program name: NCAA Stats Scraper (Functions Module)
 # Version: 1.0
 ##############################################################
-import logging as log
+import logging
 try:
     # For Python 3.0 and later
     import http.cookiejar as cookielib
