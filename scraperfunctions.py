@@ -28,6 +28,7 @@ def grabber(url, params, http_header):
     print(params)
     print(http_header)
     req = POST(url, urlencode(params).encode('utf-8'), http_header)
+    req = POST(url, None, http_header)
     #res = create_cookie().open(req)
     #data = res.read()
     return urlopen(req).read().decode("utf-8")
