@@ -40,7 +40,7 @@ def step03_test(table) :
     print((len(table),table))
     tr_list = table.findAll('tr', attrs={'class':'grey_heading'})
     td_list = [ tr.findAll('td') for tr in tr_list ]
-    td_list = [ td.text.strip() for td in td_list if td.text.strip() in ['1st Quarter','2st Quarter','3rd Quarter','4th Quarter'] ]
+    td_list = [ td.text.strip() for td in td_list ]
     print (td_list)
     return True
 def step03_transform_table(soup_table) :
