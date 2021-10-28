@@ -36,7 +36,7 @@ def mkdir(pathname) :
        return
     logging.info('Creating directory {}'.format(pathname))
     MKDIR(pathname)
-def load_environ()
+def load_environ() :
      return { key : environ[key] for key in environ if is_environ(key) }
 def is_environ(arg) :
     if 'SUDO' in arg : return True
