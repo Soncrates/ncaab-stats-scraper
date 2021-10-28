@@ -25,4 +25,4 @@ jobs:
            pwd
            ls -la
            cd test
-           python testScraperSetting.py
+           python testScraperSettings.py
