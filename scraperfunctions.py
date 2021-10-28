@@ -13,10 +13,10 @@ except:
 import urllib
 try:
     # For Python 3.0 and later
-    from urllib.request import urlopen
+    from urllib.request import urlopen, URLError
 except ImportError:
     # Fall back to Python 2's urllib2
-    from urllib2 import urlopen
+    from urllib2 import urlopen, URLError
 import re
 import scrapersettings
 
@@ -79,12 +79,12 @@ def create_cookie():
     opencookies = urllib2.build_opener(cookie)
     return(opencookies)
 
-@retry(urllib2.URLError, tries=4, delay=3, backoff=2)
+@retry(URLError, tries=4, delay=3, backoff=2)
 def grabber(url, params, http_header):
     # Create a cookie jar
     cookiejar = create_cookie()
     # Create the HTTP request
-    req = urllib2.Request(url, urllib.urlencode(params), http_header)
+    req = urlopen.Request(url, urllib.urlencode(params), http_header)
     
     # Submit the request
     res = cookiejar.open(req)
