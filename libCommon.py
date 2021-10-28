@@ -34,7 +34,7 @@ def mkdir(pathname) :
     if pathname is None : 
          raise ValueError("Object is null")
     if path.exists(pathname):
-       logging.info('Already exists : {}'.format(pathname))
+       LOG.info('Already exists {}'.format(pathname))
        return
     LOG.info('Creating directory {}'.format(pathname))
     MKDIR(pathname)
