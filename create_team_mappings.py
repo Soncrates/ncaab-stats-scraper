@@ -14,11 +14,10 @@ def step01_request_team_list(sport,**kvargs) :
 def step02_parse_response(response) :
     link_list = TRANSFORM(response,features="html.parser").findAll('a')
     link_list = [ step02_transform(link) for link in link_list if step02_test(link) ]
-    link_list = { key : value for key,value in link_list }
-    print(link_list)
-    return { key : value for key, value in step02_transform(link) for link in link_list if step02_test(link) }
+    return { key : value for key,value in link_list }
 def step02_test(link) :
-    return link.get('href').startswith('/team/')
+    ctx = link.get('href')
+    return ctx.startswith('/team/') and 'division' not in ctx
 def step02_transform(link) :
     return str(link.get_text()),  str(BASE.base_url  + link.get('href'))
 def team_list_by_sport(*url_by_division_list) :
