@@ -17,7 +17,7 @@ def step02_extract_team_data(*team_list):
     return [ EXTRACT(url, BASE.params, BASE.headers) for url in team_list ]
 def step02_parse_response_for_box_scores(response) :
     table = TRANSFORM(response,features="html.parser").find('tbody')
-    row_list = tavle.findAll('tr')
+    row_list = table.findAll('tr')
     td_list = [ row.findAll('td') for row in row_list ]
     td_list = extract_table_rows(td_list)
     print(td_list)
@@ -49,7 +49,10 @@ def step03_transform_table(soup_table) :
     row_list = extract_table_rows(td_list)
 
     total = grey_header_list[-1]
-    row_list.extend(step03_transform_rows([ total ]))
+    td_list = [ tr.findAll('td') for tr in total ]
+    total = extract_table_rows(td_list)
+    row_list.extend(total)
+    
     ret = PY.DataFrame(row_list,columns=column_list)
     return { team_name : ret }
 def extract_table_rows(tr_list) :    
