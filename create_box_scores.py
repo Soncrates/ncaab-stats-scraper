@@ -23,7 +23,10 @@ def step02_parse_response_for_box_scores(response) :
     date_list = [ ele[0] for ele in td_list if len(ele) > 1]
     print(date_list)
     link_list = [row.findAll('a') for row in row_list]
-    link_list = [ item for item in link for link in link_list]
+    tmp = []
+    for link in link_list :
+        tmp.extend(link)
+    link_list = tmp
     link_list = [ step02_transform(link) for link in link_list if step02_test(link) ]
     print(link_list)
     return dict(zip(link_list,date_list))
