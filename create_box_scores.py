@@ -20,8 +20,11 @@ def step02_parse_response_for_box_scores(response) :
     row_list = table.findAll('tr')
     td_list = [ row.findAll('td') for row in row_list ]
     td_list = extract_table_rows(td_list)
+    date_list = [ ele[0] for ele in td_list if len(ele) > 1]
     print(td_list)
     link_list = table.findAll('a')
+    link_list = [row.findAll('a') for row in row_list]
+    print(link_list)
     return [ step02_transform(link) for link in link_list if step02_test(link) ]
 def step02_test(link) :
     return link.get('href').endswith('box_score')
@@ -49,7 +52,7 @@ def step03_transform_table(soup_table) :
     row_list = extract_table_rows(td_list)
 
     total = grey_header_list[-1]
-    td_list = [ tr.findAll('td') for tr in total ]
+    td_list = total.findAll('td')
     total = extract_table_rows(td_list)
     row_list.extend(total)
     
