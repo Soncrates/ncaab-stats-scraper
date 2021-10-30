@@ -37,7 +37,7 @@ def step03_transform_box_scores(response) :
     soup = TRANSFORM(response,features="html.parser")
     table_list = soup.findAll('table', attrs={'class':'mytable'})
     ret = [ step03_transform_table(table) for table in table_list if step03_test(table) ]
-    ret = PD.merge(ret)
+    ret = PD.concat(ret)
     date_field = [ col.text.strip() for col in soup.findAll('td') ]
     date_field = [ col for col in date_field if re_date.match(col) ]
     if len(date_field) == 0 :
@@ -62,18 +62,14 @@ def step03_transform_table(soup_table) :
     team_name = soup_table.find('tr', attrs={'class':'heading'}).find('td').text.strip()
     grey_header_list = soup_table.findAll('tr', attrs={'class':'grey_heading'})
     column_list = [ col.text.strip() for col in grey_header_list[0].findAll('th') ]
-
-    row_list = soup_table.findAll('tr', attrs={'class':'smtext'})
-    td_list = [ tr.findAll('td') for tr in row_list ]
-    row_list = extract_table_rows(td_list)
-
-    total = grey_header_list[-1]
-    td_list = [ tr.findAll('td') for tr in [total] ]
-    total = extract_table_rows(td_list)
-    print(total)
-    row_list.extend(total)
-    
-    ret = PD.DataFrame(row_list,columns=column_list)
+    player_list = soup_table.findAll('tr', attrs={'class':'smtext'})
+    player_list = [ tr.findAll('td') for tr in player_list ]
+    player_list = extract_table_rows(player_list)
+    team_totals = grey_header_list[-1]
+    team_totals = [ tr.findAll('td') for tr in [team_totals] ]
+    team_totals = extract_table_rows(team_totals)
+    player_list.extend(team_totals)
+    ret = PD.DataFrame(player_list,columns=column_list)
     ret['team'] = team_name
     return ret
 def extract_table_rows(tr_list) :    
