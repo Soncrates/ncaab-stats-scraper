@@ -19,7 +19,7 @@ def step02_parse_response_for_box_scores(response) :
     table = TRANSFORM(response,features="html.parser").find('tbody')
     row_list = table.findAll('tr')
     td_list = [ row.findAll('td') for row in row_list ]
-    td_list = [ ele.text.strip() for ele in td_list for td_list in extract_table_rows(td_list) ]
+    td_list = [ ele.text.strip() for row_list in extract_table_rows(td_list) for ele in row_list ]
     date_list = [ ele[0] for ele in td_list if len(ele) > 1]
     log.debug(date_list)
     link_list = [row.findAll('a') for row in row_list]
