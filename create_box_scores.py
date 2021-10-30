@@ -59,8 +59,8 @@ def step03_transform_table(soup_table) :
     total = grey_header_list[-1]
     td_list = total.findAll('td')
     total = extract_table_rows(td_list)
-    print(total[0])
-    row_list.extend(total[0])
+    print(total)
+    row_list.extend(total)
     
     ret = PY.DataFrame(row_list,columns=column_list)
     ret['team'] = team_name
