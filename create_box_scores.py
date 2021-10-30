@@ -44,7 +44,6 @@ def step03_transform_box_scores(response) :
         date_field = 'NAN'
     else :
         date_field = date_field[0]
-    print(date_field)
     ret['date'] = date_field
     log.debug(ret)
     return ret
