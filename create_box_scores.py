@@ -13,22 +13,17 @@ def step01_read_team_list(filename):
          team_list = f.readlines()[1:]
          team_list = [ team.split("\t") for team in team_list ]
          return { var[0] : var[1] for var in team_list }
-def step02_extract_team_data(*team_list):
-    return [ EXTRACT(url, BASE.params, BASE.headers) for url in team_list ]
 def step02_parse_response_for_box_scores(response) :
     table = TRANSFORM(response,features="html.parser").find('tbody')
     row_list = table.findAll('tr')
     td_list = [ row.findAll('td') for row in row_list ]
-    td_list = extract_table_rows(td_list)
+    td_list = [ ele.text.strip() for ele in extract_table_rows(td_list) ]
     date_list = [ ele[0] for ele in td_list if len(ele) > 1]
-    print(date_list)
+    log.debug(date_list)
     link_list = [row.findAll('a') for row in row_list]
-    tmp = []
-    for link in link_list :
-        tmp.extend(link)
-    link_list = tmp
+    link_list = [ ele.text.strip() for ele in flatten_table_rows(link_list) ]
     link_list = [ step02_transform(link) for link in link_list if step02_test(link) ]
-    print(link_list)
+    log.debug(link_list)
     return dict(zip(link_list,date_list))
 def step02_test(link) :
     return link.get('href').endswith('box_score')
@@ -65,20 +60,19 @@ def step03_transform_table(soup_table) :
 def extract_table_rows(tr_list) :    
     ret = []
     for td_list in tr_list :
-        ret.append([ ele.text.strip() for ele in td_list ])
+        ret.append(td_list)
     return ret
 def flatten_table_rows(tr_list) :    
     ret = []
     for td_list in tr_list :
-        ret.extend([ ele.text.strip() for ele in td_list ])
+        ret.extend(td_list)
     return ret
-def by_sport(filename) :
+def main(filename) :
     team_url_list = step01_read_team_list(filename).values()
-    box_scores = [ step02_parse_response_for_box_scores(response) for response in step02_extract_team_data(*team_url_list) ]
+    team_list = [ EXTRACT(url, BASE.params, BASE.headers) for url in team_url_list ]
+    box_scores = [ step02_parse_response_for_box_scores(response) for response in team_list ]
     box_score_list = [ step03_extract_box_scores_by_team(table) for table in table_list for table_list in step03_extract_box_scores(url) for url in list(set(box_scores)) ]
-        
-def main(*sport_list) :
-    ret  = [ by_sport(sport) for sport in sport_list]
 if __name__ == "__main__" :
    sport_list = COMMON.find_files("team_list*csv")
-   main(*sport_list)
+   for filename in sport_list :
+       main(filename)
