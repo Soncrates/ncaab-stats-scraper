@@ -22,6 +22,7 @@ def step02_parse_response_for_box_scores(response) :
     row_list = table.findAll('tr')
     date_list = [ row.findAll('td') for row in row_list ]
     date_list = [ ele.text.strip() for ele in flatten_table_rows(date_list) ]
+    print((len(date_list),date_list))
     date_list = [ ele[0] for ele in date_list if len(ele) > 0 and re_date.match(ele[0]) ]
     print((len(date_list),date_list))
     link_list = [ row.findAll('a') for row in row_list]
@@ -41,6 +42,8 @@ def step03_transform_box_scores(response) :
     table_list = soup.findAll('table', attrs={'class':'mytable'})
     return [ step03_transform_table(table) for table in table_list if step03_test(table) ]
 def step03_test(table) :
+    if not table :
+        return False
     tr_list = table.findAll('tr', attrs={'class':'grey_heading'})
     td_list = [ tr.findAll('td') for tr in tr_list ]
     td_list = flatten_table_rows(td_list)
