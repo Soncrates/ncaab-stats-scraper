@@ -20,16 +20,15 @@ def step01_read_team_list(filename):
 def step02_parse_response_for_box_scores(response) :
     table = TRANSFORM(response,features="html.parser").find('tbody')
     row_list = table.findAll('tr')
-    td_list = [ row.findAll('td') for row in row_list ]
-    td_list = [ ele.text.strip() for row_list in extract_table_rows(td_list) for ele in row_list ]
-    print(('step02',len(td_list),td_list))    
-    date_list = [ ele[0] for ele in td_list if len(ele) > 0 and re_date.match(ele[0]) ]
-    log.debug(date_list)
-    link_list = [row.findAll('a') for row in row_list]
+    date_list = [ row.findAll('td') for row in row_list ]
+    date_list = [ ele.text.strip() for ele in flatten_table_rows(date_list) ]
+    date_list = [ ele[0] for ele in date_list if len(ele) > 0 and re_date.match(ele[0]) ]
+    link_list = [ row.findAll('a') for row in row_list]
     link_list = [ ele.text.strip() for ele in flatten_table_rows(link_list) ]
     link_list = [ step02_transform(link) for link in link_list if step02_test(link) ]
-    log.debug(link_list)
-    return dict(zip(link_list,date_list))
+    ret = dict(zip(link_list,date_list))
+    print(ret)
+    return ret
 def step02_test(link) :
     return link.get('href').endswith('box_score')
 def step02_transform(link) :
