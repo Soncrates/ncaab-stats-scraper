@@ -61,11 +61,13 @@ def extract_table_rows(tr_list) :
     ret = []
     for td_list in tr_list :
         ret.append(td_list)
+    print(ret)
     return ret
 def flatten_table_rows(tr_list) :    
     ret = []
     for td_list in tr_list :
         ret.extend(td_list)
+    print(ret)
     return ret
 def main(filename) :
     team_url_list = step01_read_team_list(filename).values()
