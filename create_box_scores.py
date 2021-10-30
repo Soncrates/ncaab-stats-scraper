@@ -27,7 +27,7 @@ def step02_parse_response_for_box_scores(response) :
     link_list = [ ele.get('href') for ele in flatten_table_rows(link_list) ]
     link_list = [ step02_transform(link) for link in link_list if step02_test(link) ]
     ret = dict(zip(link_list,date_list))
-    print(ret)
+    log.debug(ret)
     return ret
 def step02_test(link) :
     return link.endswith('box_score')
@@ -59,10 +59,12 @@ def step03_transform_table(soup_table) :
     total = grey_header_list[-1]
     td_list = total.findAll('td')
     total = extract_table_rows(td_list)
-    row_list.extend(total)
+    print(total[0])
+    row_list.extend(total[0])
     
     ret = PY.DataFrame(row_list,columns=column_list)
-    return { team_name : ret }
+    ret['team'] = team_name
+    return ret
 def extract_table_rows(tr_list) :    
     ret = []
     for td_list in tr_list :
