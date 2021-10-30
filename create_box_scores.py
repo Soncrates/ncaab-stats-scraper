@@ -22,13 +22,9 @@ def step02_parse_response_for_box_scores(response) :
     row_list = table.findAll('tr')
     date_list = [ row.findAll('td') for row in row_list ]
     date_list = [ ele.text.strip() for ele in flatten_table_rows(date_list) ]
-    print((len(date_list),date_list))
-    date_list = [ ele[0] for ele in date_list if len(ele) > 0 and re_date.match(ele[0]) ]
-    print((len(date_list),date_list))
+    date_list = [ ele for ele in date_list if re_date.match(ele) ]
     link_list = [ row.findAll('a') for row in row_list]
-    print((len(link_list),link_list))
     link_list = [ ele.get('href') for ele in flatten_table_rows(link_list) ]
-    print((len(link_list),link_list))
     link_list = [ step02_transform(link) for link in link_list if step02_test(link) ]
     ret = dict(zip(link_list,date_list))
     print(ret)
@@ -46,7 +42,7 @@ def step03_test(table) :
         return False
     tr_list = table.findAll('tr', attrs={'class':'grey_heading'})
     td_list = [ tr.findAll('td') for tr in tr_list ]
-    td_list = flatten_table_rows(td_list)
+    td_list = [ ele.text.strip() for ele in flatten_table_rows(td_list) ]
     td_list = [ td for td in td_list if td in ['1st Quarter', '2nd Quarter', '3rd Quarter', '4th Quarter'] ]
     if len(td_list) > 0 :
         return False
