@@ -3,11 +3,13 @@
 # Program name: NCAA Stats Scraper (Team Mappings Module)
 # Version: 1.0
 ##############################################################
+import re
 from scraperfunctions import grabber as EXTRACT
 from scrapersettings import SportExtract as BASE
 from bs4 import BeautifulSoup as TRANSFORM
 import pandas as PY
 
+re_date = re.compile(r'(\d+/\d+/\d+)')
 def step01_read_team_list(filename):
     with open(filename, "rb") as f :
          team_list = f.readlines()[1:]
@@ -17,7 +19,7 @@ def step02_parse_response_for_box_scores(response) :
     table = TRANSFORM(response,features="html.parser").find('tbody')
     row_list = table.findAll('tr')
     td_list = [ row.findAll('td') for row in row_list ]
-    td_list = [ ele.text.strip() for ele in extract_table_rows(td_list) ]
+    td_list = [ ele.text.strip() for ele in td_list for td_list in extract_table_rows(td_list) ]
     date_list = [ ele[0] for ele in td_list if len(ele) > 1]
     log.debug(date_list)
     link_list = [row.findAll('a') for row in row_list]
