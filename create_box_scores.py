@@ -5,7 +5,7 @@
 ##############################################################
 from bs4 import BeautifulSoup as TRANSFORM
 import logging as log
-import pandas as PY
+import pandas as PD
 import re
 
 from scraperfunctions import grabber as EXTRACT
@@ -36,7 +36,18 @@ def step02_transform(link) :
 def step03_transform_box_scores(response) :
     soup = TRANSFORM(response,features="html.parser")
     table_list = soup.findAll('table', attrs={'class':'mytable'})
-    return [ step03_transform_table(table) for table in table_list if step03_test(table) ]
+    ret = [ step03_transform_table(table) for table in table_list if step03_test(table) ]
+    ret = PD.merge(ret)
+    date_field = [ col.text.strip() for col in soup.findAll('td') ]
+    date_field = [ col for col in date_field if re_date.match(col) ]
+    if len(date_field) == 0 :
+        date_field = 'NAN'
+    else :
+        date_field = date_field[0]
+    print(date_field)
+    ret['date'] = date_field
+    log.debug(ret)
+    return ret
 def step03_test(table) :
     if not table :
         return False
@@ -48,13 +59,6 @@ def step03_test(table) :
         return False
     return True
 def step03_transform_table(soup_table) :
-    date_field = [ col.text.strip() for col in soup_table.findAll('td') ]
-    date_field = [ col for col in date_field if re_date.match(col) ]
-    if len(date_field) == 0 :
-        date_field = 'NAN'
-    else :
-        date_field = date_field[0]
-    print(date_field)
     team_name = soup_table.find('tr', attrs={'class':'heading'}).find('td').text.strip()
     grey_header_list = soup_table.findAll('tr', attrs={'class':'grey_heading'})
     column_list = [ col.text.strip() for col in grey_header_list[0].findAll('th') ]
@@ -69,9 +73,8 @@ def step03_transform_table(soup_table) :
     print(total)
     row_list.extend(total)
     
-    ret = PY.DataFrame(row_list,columns=column_list)
+    ret = PD.DataFrame(row_list,columns=column_list)
     ret['team'] = team_name
-    ret['date'] = date_field
     return ret
 def extract_table_rows(tr_list) :    
     ret = []
