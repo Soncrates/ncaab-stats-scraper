@@ -49,7 +49,7 @@ def step03_test(table) :
     return True
 def step03_transform_table(soup_table) :
     date_field = [ col.text.strip() for col in soup_table.findAll('td') ]
-    date_field = [ col for col in date_field if re_date.match(ele) ]
+    date_field = [ col for col in date_field if re_date.match(col) ]
     if len(date_field) == 0 :
         date_field = 'NAN'
     else :
