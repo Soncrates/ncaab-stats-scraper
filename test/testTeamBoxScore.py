@@ -7,7 +7,6 @@ import create_box_scores as TEST
 import unittest
 import logging as log
 
-
 def load_response(filename) :
     filename_list = COMMON.find_files(filename)
     with open(filename_list[0]) as fp :
@@ -25,10 +24,10 @@ class TestScrapeBoxScore(unittest.TestCase) :
         log.debug(sorted(obj))
     def testLacrosseStep03(self) :
         obj_list = [ TEST.step03_transform_box_scores(team_list) for team_list in [self.team_MLA_Navy_BoxSCore] ]
-        #obj= {k:v for score in obj for k,v in score.items() }
-        ret = {}
         for obj in obj_list :
-            log.debug(obj)
+            obj.to_csv(r'./test_output.csv', index=False)
+            f = load_response(r'./test_output.csv')
+            log.debug(f)
 
 if __name__ == '__main__' :
    import sys
