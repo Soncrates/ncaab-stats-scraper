@@ -23,8 +23,11 @@ def step02_parse_response_for_box_scores(response) :
     date_list = [ row.findAll('td') for row in row_list ]
     date_list = [ ele.text.strip() for ele in flatten_table_rows(date_list) ]
     date_list = [ ele[0] for ele in date_list if len(ele) > 0 and re_date.match(ele[0]) ]
+    print((len(date_list),date_list))
     link_list = [ row.findAll('a') for row in row_list]
+    print((len(link_list),link_list))
     link_list = [ ele.get('href') for ele in flatten_table_rows(link_list) ]
+    print((len(link_list),link_list))
     link_list = [ step02_transform(link) for link in link_list if step02_test(link) ]
     ret = dict(zip(link_list,date_list))
     print(ret)
@@ -65,13 +68,11 @@ def extract_table_rows(tr_list) :
     ret = []
     for td_list in tr_list :
         ret.append(td_list)
-    print(('extract',len(ret),ret))
     return ret
 def flatten_table_rows(tr_list) :    
     ret = []
     for td_list in tr_list :
         ret.extend(td_list)
-    print(('flat',len(ret),ret))
     return ret
 def main(filename) :
     team_url_list = step01_read_team_list(filename).values()
