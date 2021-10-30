@@ -55,6 +55,7 @@ def step03_transform_table(soup_table) :
     row_list = soup_table.findAll('tr', attrs={'class':'smtext'})
     td_list = [ tr.findAll('td') for tr in row_list ]
     row_list = extract_table_rows(td_list)
+    print(row_list[:3])
 
     total = grey_header_list[-1]
     td_list = total.findAll('td')
