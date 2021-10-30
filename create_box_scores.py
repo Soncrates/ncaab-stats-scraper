@@ -66,7 +66,7 @@ def step03_transform_table(soup_table) :
 def extract_table_rows(tr_list) :    
     ret = []
     for td_list in tr_list :
-        ret.append(td_list)
+        ret.append([ col.text.strip() for col in td_list ])
     return ret
 def flatten_table_rows(tr_list) :    
     ret = []
