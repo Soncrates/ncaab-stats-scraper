@@ -27,8 +27,8 @@ def write_csv(filename,team_list) :
              f.writelines("{}\t{}\n".format(name,url))
 def main(sport) :
     filename =  "team_list_{sport_code}.csv".format(**sport.default_params)
-    division_list = [ EXTRACT(url, BASE.params, BASE.headers) for url in sport.extract_team_list(**kvargs) ] 
-    division_list = [ step02_parse_response(division) for division in division_list ]
+    division_list = [ EXTRACT(url, BASE.params, BASE.headers) for url in sport.extract_team_list() ] 
+    division_list = [ step01_parse_response(division) for division in division_list ]
     team_list = merge_divisions(*division_list)
     write_csv(filename, team_list)        
 
