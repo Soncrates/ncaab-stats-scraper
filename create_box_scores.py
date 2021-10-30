@@ -22,7 +22,8 @@ def step02_parse_response_for_box_scores(response) :
     row_list = table.findAll('tr')
     td_list = [ row.findAll('td') for row in row_list ]
     td_list = [ ele.text.strip() for row_list in extract_table_rows(td_list) for ele in row_list ]
-    date_list = [ ele[0] for ele in td_list if re_date.match(ele[0]) ]
+    print(('step02',len(td_list),td_list))    
+    date_list = [ ele[0] for ele in td_list if len(ele) > 0 and re_date.match(ele[0]) ]
     log.debug(date_list)
     link_list = [row.findAll('a') for row in row_list]
     link_list = [ ele.text.strip() for ele in flatten_table_rows(link_list) ]
