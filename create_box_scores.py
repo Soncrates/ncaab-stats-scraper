@@ -48,7 +48,12 @@ def step03_test(table) :
         return False
     return True
 def step03_transform_table(soup_table) :
-    date_field = [ col.text.strip() for col in soup_table.findAll('td') if re_date.match(col) ]
+    date_field = [ col.text.strip() for col in soup_table.findAll('td') ]
+    date_field = [ col for col in date_field if re_date.match(ele) ]
+    if len(date_field) == 0 :
+        date_field = 'NAN'
+    else :
+        date_field = date_field[0]
     print(date_field)
     team_name = soup_table.find('tr', attrs={'class':'heading'}).find('td').text.strip()
     grey_header_list = soup_table.findAll('tr', attrs={'class':'grey_heading'})
