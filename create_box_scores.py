@@ -24,15 +24,15 @@ def step02_parse_response_for_box_scores(response) :
     date_list = [ ele.text.strip() for ele in flatten_table_rows(date_list) ]
     date_list = [ ele[0] for ele in date_list if len(ele) > 0 and re_date.match(ele[0]) ]
     link_list = [ row.findAll('a') for row in row_list]
-    link_list = [ ele.text.strip() for ele in flatten_table_rows(link_list) ]
+    link_list = [ ele.get('href') for ele in flatten_table_rows(link_list) ]
     link_list = [ step02_transform(link) for link in link_list if step02_test(link) ]
     ret = dict(zip(link_list,date_list))
     print(ret)
     return ret
 def step02_test(link) :
-    return link.get('href').endswith('box_score')
+    return link.endswith('box_score')
 def step02_transform(link) :
-    return str(BASE.base_url  + link.get('href'))
+    return str(BASE.base_url  + link)
 def step03_transform_box_scores(response) :
     soup = TRANSFORM(response,features="html.parser")
     table_list = soup.findAll('table', attrs={'class':'mytable'})
