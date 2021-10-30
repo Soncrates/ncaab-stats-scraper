@@ -48,6 +48,8 @@ def step03_test(table) :
         return False
     return True
 def step03_transform_table(soup_table) :
+    date_field = [ col.text.strip() for col in soup_table.findAll('td') if re_date.match(col) ]
+    print(date_field)
     team_name = soup_table.find('tr', attrs={'class':'heading'}).find('td').text.strip()
     grey_header_list = soup_table.findAll('tr', attrs={'class':'grey_heading'})
     column_list = [ col.text.strip() for col in grey_header_list[0].findAll('th') ]
@@ -55,16 +57,16 @@ def step03_transform_table(soup_table) :
     row_list = soup_table.findAll('tr', attrs={'class':'smtext'})
     td_list = [ tr.findAll('td') for tr in row_list ]
     row_list = extract_table_rows(td_list)
-    print(row_list[:3])
 
     total = grey_header_list[-1]
-    td_list = total.findAll('td')
+    td_list = [ tr.findAll('td') for tr in [total] ]
     total = extract_table_rows(td_list)
     print(total)
     row_list.extend(total)
     
     ret = PY.DataFrame(row_list,columns=column_list)
     ret['team'] = team_name
+    ret['date'] = date_field
     return ret
 def extract_table_rows(tr_list) :    
     ret = []
