@@ -28,6 +28,4 @@ jobs:
            python testTeamMapping.py
            python testTeamBoxScore.py
            find ../log -type f | egrep "log$" | sort
-           #cat ../log/testScrapperSettings.log
-           #cat ../log/testTeamMapping.log
-           cat ../log/testTeamBoxScore.log
+           find ../log -type f | egrep "log$" | sort | xargs cat
