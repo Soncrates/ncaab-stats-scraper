@@ -3,10 +3,6 @@
 # Program name: NCAA Sports Stats Scraper (Settings file)
 # Version: 1.0
 ##############################################################
-
-#start_url = 'http://stats.ncaa.org/team/inst_team_list?sport_code=MBB&academic_year=' + str(academic_year) + "&division=1" 
-#domain_base = 'http://stats.ncaa.org' # Base domain
-
 from copy import deepcopy
 
 class SportExtract() :
