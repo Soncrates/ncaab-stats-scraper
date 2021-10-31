@@ -14,7 +14,6 @@ ind_game_stats = 1 # Get individual game statistics (0 = no, 1 = yes)
 ind_player_stats = 1 # Get individual player statistics (0 = no, 1 = yes)
 ind_team_stats = 1 # Get individual team statistics (a line per team, such that each game will have two lines (one for away team, one for home team)) (0 = no, 1 = yes)
 
-
 # Where do you want to save the data?
 team_mappingfile = "mappings/team_mappings.tsv" # Data file for team mappings
 player_mappingfile = "mappings/player_mappings.tsv" # Data file for player mappings
@@ -24,7 +23,6 @@ summary_team_data = "data/summary_team_data.tsv" # Data file for team summary st
 game_data = "data/game_data.tsv" # Data file for each game
 player_data = "data/player_data.tsv" # Data file for each player
 team_data = "data/team_data.tsv" # Data file for each team
-
 
 #### The variables below could be set, but probably don't need any modification #####
 debugmode = 1 # Output program steps (0 = off, 1 = on)
@@ -41,3 +39,32 @@ http_header = {
             "Pragma": "no-cache",
             "Cache-Control": "no-cache"
             } # Variables from the HTTP header (default)
+try:
+    # For Python 3.0 and later
+    import http.cookiejar as cookielib
+    from urllib.request import urlopen, URLError, HTTPCookieProcessor, build_opener, Request as POST
+    from urllib.parse import urlencode
+except ImportError:
+    # Fall back to Python 2's urllib2
+    import cookielib
+    from urllib2 import urlopen, URLError, HTTPCookieProcessor, build_opener
+    from urllib import urlencode
+from libDecorator import retry
+
+LOG = logging.getLogger(__name__) 
+
+def create_cookie():
+    cookie_jar = cookielib.LWPCookieJar()
+    ret = HTTPCookieProcessor(cookie_jar)
+    return build_opener(ret)
+@retry(URLError, tries=4, delay=3, backoff=2)
+def grabber(url, params, http_header):
+    print((url,http_header))
+    print(http_header)
+    #req = POST(url, urlencode(params).encode('utf-8'), http_header)
+    req = POST(url, headers=http_header)
+    res = urlopen(req)
+    data = res.read()
+    #res = create_cookie().open(req)
+    #data = res.read()
+    return data.decode("utf-8")
