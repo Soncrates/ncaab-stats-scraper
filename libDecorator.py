@@ -27,6 +27,7 @@ def retry(ExceptionToCheck, tries=4, delay=3, backoff=2, logger=None):
         def f_retry(*args, **kwargs):
             mtries, mdelay = tries, delay
             while mtries > 1:
+                time.sleep(mdelay)
                 try:
                     return f(*args, **kwargs)
                 except ExceptionToCheck as e:
@@ -35,7 +36,6 @@ def retry(ExceptionToCheck, tries=4, delay=3, backoff=2, logger=None):
                         logger.warning(msg)
                     else:
                         print (msg)
-                    time.sleep(mdelay)
                     mtries -= 1
                     mdelay *= backoff
             return f(*args, **kwargs)
