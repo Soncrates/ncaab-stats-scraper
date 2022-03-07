@@ -1,10 +1,11 @@
-from sys import path
-path.append("../")
-
-import libCommon as COMMON
-import scrapersettings as TEST
 import unittest
 import logging as log
+import os
+from sys import path
+
+path.append(os.path.dirname(os.getcwd()))
+import libCommon as COMMON
+import scrapersettings as TEST
 
 class TestScraperSettings(unittest.TestCase) :
     def setUp(self) : pass
@@ -24,8 +25,5 @@ class TestScraperSettings(unittest.TestCase) :
 if __name__ == '__main__' :
    import sys
    log_file = COMMON.build_args(*sys.argv).replace('.py','') + '.log'
-   log_file = COMMON.build_path('../log',log_file)
-   COMMON.remove_file(log_file)
-   COMMON.mkdir("../log")
    log.basicConfig(filename=log_file, format=COMMON.LOG_FORMAT_TEST, level=log.DEBUG)
    unittest.main()
