@@ -10,6 +10,8 @@ import scrapersettings as SPORT
 import create_team_mappings as TEAMS
 import create_box_scores as SCORES
 
+from libCustom import PERSONAL
+
 HELP = "1) Football, 2) Basketball, 3) Soccer, 4) Lacrosse"
 
 most_recent_date = '1970_01_01'
@@ -20,8 +22,8 @@ client_list =  [
 
 
 class CUSTOM:
-    _from = "emersoncus@gmail.com"
-    pswd = "qhxbqkhdvzsbaxjk"
+    _from = PERSONAL._from
+    pswd = PERSONAL.pswd
     subject="Team Scores, {date} for {user_login}"
     body ="""
 Hi {first_name} {last_name}
