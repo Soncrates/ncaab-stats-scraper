@@ -43,8 +43,8 @@ class TRANSFORM_BS4 :
 
 class TRANSFORM_LINKS :
     @staticmethod
-    def main(response) :
-        log.info("Trasforming links box scores")
+    def main(team,response) :
+        log.info("Trasforming links box scores for {}".format(team))
         row_list  = TRANSFORM_LINKS.get_game_table(response)
         if not row_list :
             log.warn(response)
@@ -54,7 +54,7 @@ class TRANSFORM_LINKS :
         ret = dict(zip(date_list,link_list))
         ret = { key : ret[key] for key in ret if TRANSFORM_LINKS.is_boxscore(ret[key]) }
         log.info(ret)
-        log.info("Completed Trasforming links box scores")
+        log.info("Completed Trasforming links box scores for {}".format(team))
         return ret
     @staticmethod
     def get_game_table(response) :
@@ -98,10 +98,11 @@ class TRANSFORM_LINKS :
     
 class TRANSFORM_BOX_SCORES :
     @staticmethod
-    def main(url) :
-        log.info("Trasforming box scores")
+    def main(team, url) :
+        log.info("Extracting box score for {}".format(team))
         log.debug(url)
         response = EXTRACT_SCORES(url, BASE.params, BASE.headers)
+        log.info("Transforming box score for {}".format(team))
         soup = TRANSFORM(response,features="html.parser")
         table_list = soup.findAll('table', attrs={'class':'mytable'})
         ret = [ TRANSFORM_BOX_SCORES.transform(table) for table in table_list if TRANSFORM_BOX_SCORES.is_score(table) ]
@@ -114,7 +115,7 @@ class TRANSFORM_BOX_SCORES :
             date_field = date_field[0]
         ret['date'] = date_field
         log.debug(ret)
-        log.info("Completed trasforming box scores")
+        log.info("Completed transforming box score for {}".format(team))
         return ret
     @staticmethod
     def is_score(table) :
@@ -145,27 +146,27 @@ class TRANSFORM_BOX_SCORES :
         log.debug(ret)
         return ret
 def extract(filename) :
-    team_url_list = READ_FILE_INPUT.get_team_list(filename).values()
-    team_url_list = list(team_url_list)
-    log.debug(team_url_list[:5])
-    for url in team_url_list :
-        yield EXTRACT_TEAMS(url, BASE.params, BASE.headers)
+    team_url_list = READ_FILE_INPUT.get_team_list(filename)
+    for team in team_url_list :
+        log.info("Extracting games for {}".format(team))
+        yield team, EXTRACT_TEAMS(team_url_list[team], BASE.params, BASE.headers)
+    log.info("Complete Extracting games")
         
 def main(filename) :
     ret = PD.DataFrame()
     registered_links = set()
-    for team in extract(filename) :
-        box_scores = TRANSFORM_LINKS.main(team)
+    for team, team_url in extract(filename) :
+        box_scores = TRANSFORM_LINKS.main(team,team_url)
         for link in TRANSFORM_LINKS.get_links(**box_scores) :
             if link in registered_links :
                 log.info(link)
                 continue
             registered_links.add(link)
-            score = TRANSFORM_BOX_SCORES.main(link)
+            score = TRANSFORM_BOX_SCORES.main(team,link)
             log.debug(score)
             ret = PD.concat([ret, score])
-        if len(registered_links) > 6 :
-            break
+#        if len(registered_links) > 6 :
+#            break
     return ret.drop_duplicates()
 if __name__ == "__main__" :
    sport_list = COMMON.find_files("team_list*csv")

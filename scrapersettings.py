@@ -29,7 +29,7 @@ class SportExtract() :
             params = {}
             default_params = { "division" : 1 ,
                                 "conf_id" : -1,
-                                "academic_year" : 2021
+                                "academic_year" : 2022
                               }
             @staticmethod
             def convert_params(params,kvargs) :
