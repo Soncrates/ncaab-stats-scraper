@@ -91,7 +91,14 @@ class TRANSFORM_LINKS :
         return ret
     @staticmethod
     def is_boxscore(link) :
+        #if 'contest' not in link :
+        #    return False
         return link.endswith('box_score')
+    @staticmethod
+    def is_stat(link) :
+        #if 'contest' not in link :
+        #    return False
+        return link.endswith('team_stats')
     @staticmethod
     def transform(link) :
         return str(BASE.base_url  + link)
@@ -105,8 +112,14 @@ class TRANSFORM_BOX_SCORES :
         log.info("Transforming box score for {}".format(team))
         soup = TRANSFORM(response,features="html.parser")
         table_list = soup.findAll('table', attrs={'class':'mytable'})
-        ret = [ TRANSFORM_BOX_SCORES.transform(table) for table in table_list if TRANSFORM_BOX_SCORES.is_score(table) ]
-        ret = PD.concat(ret)
+        ret = [ TRANSFORM_BOX_SCORES.transform_score(table) for table in table_list if TRANSFORM_BOX_SCORES.is_score(table) ]
+        if not ret :
+            ret = [ table.replace('box_score','team_stats') for table in table_list]
+            ret = [ TRANSFORM_BOX_SCORES.transform_stat(table) for table in table_list if TRANSFORM_BOX_SCORES.is_stat(table) ]
+            log.debug(ret)
+        if ret :
+           ret = PD.concat(ret)
+        log.debug(type(ret))
         date_field = [ col.text.strip() for col in soup.findAll('td') ]
         date_field = [ col for col in date_field if BOX_SCORE_RE.match(col) ]
         if len(date_field) == 0 :
@@ -114,6 +127,7 @@ class TRANSFORM_BOX_SCORES :
         else :
             date_field = date_field[0]
         ret['date'] = date_field
+        ret['link'] = url
         log.debug(ret)
         log.info("Completed transforming box score for {}".format(team))
         return ret
@@ -129,7 +143,34 @@ class TRANSFORM_BOX_SCORES :
             return False
         return True
     @staticmethod
-    def transform(soup_table) :
+    def is_stat(table) :
+        if not table :
+            return False
+        tr_list = table.findAll('tr', attrs={'class':'grey_heading'})
+        td_list = [ tr.findAll('td') for tr in tr_list ]
+        td_list = [ ele.text.strip() for ele in TRANSFORM_BS4.flatten_table_rows(td_list) ]
+        if len(td_list) > 0 :
+            return False
+        return True
+    @staticmethod
+    def transform_score(soup_table) :
+        team_name = soup_table.find('tr', attrs={'class':'heading'}).find('td').text.strip()
+        log.debug(team_name)
+        grey_header_list = soup_table.findAll('tr', attrs={'class':'grey_heading'})
+        column_list = [ col.text.strip() for col in grey_header_list[0].findAll('th') ]
+        player_list = soup_table.findAll('tr', attrs={'class':'smtext'})
+        player_list = [ tr.findAll('td') for tr in player_list ]
+        player_list = TRANSFORM_BS4.extract_table_rows(player_list)
+        team_totals = grey_header_list[-1]
+        team_totals = [ tr.findAll('td') for tr in [team_totals] ]
+        team_totals = TRANSFORM_BS4.extract_table_rows(team_totals)
+        player_list.extend(team_totals)
+        ret = PD.DataFrame(player_list,columns=column_list)
+        ret['team'] = team_name
+        log.debug(ret)
+        return ret
+    @staticmethod
+    def transform_stat(soup_table) :
         team_name = soup_table.find('tr', attrs={'class':'heading'}).find('td').text.strip()
         log.debug(team_name)
         grey_header_list = soup_table.findAll('tr', attrs={'class':'grey_heading'})
