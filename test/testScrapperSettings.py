@@ -5,7 +5,7 @@ from sys import path
 
 path.append(os.path.dirname(os.getcwd()))
 import libCommon as COMMON
-import scrapersettings as TEST
+import libScrapeNCAASettings as TEST
 
 class TestScraperSettings(unittest.TestCase) :
     def setUp(self) : pass

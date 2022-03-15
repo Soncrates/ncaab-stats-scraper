@@ -4,8 +4,8 @@
 # Version: 1.0
 ##############################################################
 
-from scraperfunctions import grabber as EXTRACT
-from scrapersettings import SportExtract as BASE
+from libScrapeNCAASettings import SportExtract as BASE
+from libScrapeNCAAFunctions import grabber as EXTRACT
 from bs4 import BeautifulSoup as TRANSFORM
 import logging as log
 

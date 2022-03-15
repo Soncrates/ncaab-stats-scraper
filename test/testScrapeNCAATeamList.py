@@ -5,7 +5,7 @@ from sys import path
 
 path.append(os.path.dirname(os.getcwd()))
 import libCommon as COMMON
-import create_team_mappings as TEST
+import libScrapeNCAATeamList as TEST
 
 def load_response(filename) :
     filename_list = COMMON.find_files(filename)

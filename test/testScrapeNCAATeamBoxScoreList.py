@@ -2,10 +2,11 @@ import unittest
 import logging as log
 import os
 from sys import path
+from bs4 import BeautifulSoup as TRANSFORM
 
 path.append(os.path.dirname(os.getcwd()))
 import libCommon as COMMON
-import create_box_scores as TEST
+import libScrapeNCAATeamBoxScoreList as TEST
 
 def load_response(filename) :
     filename_list = COMMON.find_files(filename)
@@ -18,12 +19,18 @@ class TestScrapeBoxScore(unittest.TestCase) :
     def setUp(self) : 
         self.team_MLA_Navy = load_response("./test_input/team_MLA_Navy.html")
         self.team_MLA_Navy_BoxSCore = load_response("./test_input/team_MLA_BoxScore.html")
-    def testLacrosseStep02(self) :
-        obj = [ TEST.TRANSFORM_LINKS.main(team_list) for team_list in [self.team_MLA_Navy] ]
+    def testLacrosseBoxScoreList(self) :
+        obj = TEST.TRANSFORM_LINKS.main('Navy', self.team_MLA_Navy)
         log.debug(COMMON.pretty_print(obj))
         log.debug(sorted(obj))
-    def testLacrosseStep03(self) :
-        obj_list = [ TEST.TRANSFORM_BOX_SCORES.main(team_list) for team_list in [self.team_MLA_Navy_BoxSCore] ]
+    def testLacrosseGetScore(self) :
+        #obj_list = [ TEST.TRANSFORM_BOX_SCORES.main(team_list) for team_list in [self.team_MLA_Navy_BoxSCore] ]
+
+        soup = TRANSFORM(self.team_MLA_Navy_BoxSCore,features="html.parser")
+        table_list = soup.findAll('table', attrs={'class':'mytable'})
+        log.debug(table_list)
+        obj_list = TEST.TRANSFORM_BOX_SCORES.business_logic(table_list)
+        
         for obj in obj_list :
             obj.to_csv(r'./test_output.csv', index=False)
             f = load_response(r'./test_output.csv')

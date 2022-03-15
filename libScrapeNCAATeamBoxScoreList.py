@@ -9,9 +9,9 @@ import logging as log
 import pandas as PD
 import re
 
-from scraperfunctions import grab_scores as EXTRACT_SCORES, grabber as EXTRACT_TEAMS
-from scrapersettings import SportExtract as BASE
 import libCommon as COMMON
+from libScrapeNCAASettings import SportExtract as BASE
+from libScrapeNCAAFunctions import grab_scores as EXTRACT_SCORES, grabber as EXTRACT_TEAMS
 
 BOX_SCORE_RE = re.compile(r'(\d+/\d+/\d+)')
 BOX_SCORE_DATE_FORMAT = '%m/%d/%Y'
@@ -49,12 +49,17 @@ class TRANSFORM_LINKS :
         if not row_list :
             log.warn(response)
             return {}
+        ret = TRANSFORM_LINKS.business_logic(row_list)
+        log.info("Completed Trasforming links box scores for {}".format(team))
+        return ret
+    @staticmethod
+    def business_logic(row_list) :
+        log.debug(row_list)
         date_list = [ ele.text.strip() for ele in row_list[0::4] if BOX_SCORE_RE.match(ele.text) ]
         link_list = [ TRANSFORM_LINKS.get_score(cell) for cell in row_list[2::4]]
         ret = dict(zip(date_list,link_list))
         ret = { key : ret[key] for key in ret if TRANSFORM_LINKS.is_boxscore(ret[key]) }
-        log.info(ret)
-        log.info("Completed Trasforming links box scores for {}".format(team))
+        log.debug(ret)
         return ret
     @staticmethod
     def get_game_table(response) :
@@ -110,29 +115,40 @@ class TRANSFORM_BOX_SCORES :
         log.debug(url)
         response = EXTRACT_SCORES(url, BASE.params, BASE.headers)
         log.info("Transforming box score for {}".format(team))
+
         soup = TRANSFORM(response,features="html.parser")
         table_list = soup.findAll('table', attrs={'class':'mytable'})
+        ret = TRANSFORM_BOX_SCORES.business_logic(table_list)        
+        if ret :
+           ret = PD.concat(ret)
+        ret['date'] = TRANSFORM_BOX_SCORES.business_logic_find_date(soup)
+        ret['link'] = url
+        log.debug(ret)
+        log.info("Completed transforming box score for {}".format(team))
+        return ret
+    @staticmethod
+    def business_logic(table_list) :
         ret = [ TRANSFORM_BOX_SCORES.transform_score(table) for table in table_list if TRANSFORM_BOX_SCORES.is_score(table) ]
         if not ret :
             ret = [ table.replace('box_score','team_stats') for table in table_list]
+            log.debug(ret)
             ret = [ TRANSFORM_BOX_SCORES.transform_stat(table) for table in table_list if TRANSFORM_BOX_SCORES.is_stat(table) ]
             log.debug(ret)
-        if ret :
-           ret = PD.concat(ret)
         log.debug(type(ret))
+        return ret
+    @staticmethod
+    def business_logic_find_date(soup) :
         date_field = [ col.text.strip() for col in soup.findAll('td') ]
         date_field = [ col for col in date_field if BOX_SCORE_RE.match(col) ]
         if len(date_field) == 0 :
             date_field = 'NAN'
         else :
             date_field = date_field[0]
-        ret['date'] = date_field
-        ret['link'] = url
-        log.debug(ret)
-        log.info("Completed transforming box score for {}".format(team))
-        return ret
+        log.debug(date_field)
+        return date_field
     @staticmethod
     def is_score(table) :
+        log.debug(type(table))
         if not table :
             return False
         tr_list = table.findAll('tr', attrs={'class':'grey_heading'})
@@ -144,6 +160,7 @@ class TRANSFORM_BOX_SCORES :
         return True
     @staticmethod
     def is_stat(table) :
+        log.debug(type(table))
         if not table :
             return False
         tr_list = table.findAll('tr', attrs={'class':'grey_heading'})

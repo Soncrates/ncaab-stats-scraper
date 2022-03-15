@@ -6,9 +6,9 @@ import logging as log
 
 import libCommon as COMMON
 from libEmail import EMAIL, CLIENTS
-import scrapersettings as SPORT
-import create_team_mappings as TEAMS
-import create_box_scores as SCORES
+import libScrapeNCAASettings as SPORT
+import libScrapeNCAATeamList as TEAMS
+import libScrapeNCAATeamBoxScoreList as SCORES
 
 from libCustom import PERSONAL
 
