@@ -35,6 +35,9 @@ def try_02(url,headers) :
     ret.raise_for_status()
     log.debug(ret.status_code)
     return ret
+def validate(url,headers) :
+    ret = requests.get(url, headers=headers)
+    return ret.ok
 
 @retry(URLError, tries=4, delay=3, backoff=2)
 def grabber(url, params, http_header):
