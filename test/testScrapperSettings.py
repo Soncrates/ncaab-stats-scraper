@@ -2,6 +2,7 @@ import unittest
 import logging as log
 import os
 from sys import path
+import pandas as PD
 
 path.append(os.path.dirname(os.getcwd()))
 import libCommon as COMMON
@@ -34,6 +35,7 @@ class TestScraperSettings(unittest.TestCase) :
         first.to_csv('basketball_first.csv',index = False, header=True, sep=',')
         last.to_csv('basketball_last.csv',index = False, header=True, sep=',')
         log.debug(first)
+    @unittest.skip
     def testFootball2(self) :
         ret = extract(TEST2.Football())
         #ret.dropna(axis = 1, how ='any', inplace = True)
@@ -48,6 +50,14 @@ class TestScraperSettings(unittest.TestCase) :
         home.to_csv('football_home.csv',index = False, header=True, sep=',')
         away.to_csv('football_away.csv',index = False, header=True, sep=',')
         log.debug(first)
+    def testFootballEnrich(self) :
+        data = PD.read_csv('football_all.csv')
+        icon = PD.read_csv('../data/icon.csv')
+        log.debug(data)
+        log.debug(icon)
+        data = data.merge(icon, left_on='Team Name', right_on='Team',how="outer")
+        log.debug(data)
+        data.to_csv('enriched.csv')
     @unittest.skip
     def test_Soccer(self) :
         ret = extract(TEST2.Soccer())

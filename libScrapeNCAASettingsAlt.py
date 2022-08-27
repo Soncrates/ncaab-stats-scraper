@@ -323,8 +323,9 @@ class Soccer() :
 class Football() :
         default_params = { "sport_code" : "football/fbs"
                          }
-        basic_columns = ['startDate', 'startTime', 'title', 'homeTeam','sixCharAbbr']
+        basic_columns = ['startDate', 'startTime', 'homeTeam', 'shortname', 'title']
         default_columns = ['1st Downs', 'Passing', 'Passing Interceptions', 'Rushing',  'Total Offense', 'Total Offense Plays', 'Fumbles: Number-Lost','Punting: Number-Yards', 'Fourth-Down Conversions', 'Fumbles:Number-Lost', 'Penalties: Number-Yards', 'Third-Down Conversions']
+        drop_columns = ['url', 'color ','path','startTimeEpoch','seoName','sixCharAbbr']
         @classmethod
         def url_game_list(cls,**kvargs) :
             ret = deepcopy(cls.default_params)
@@ -349,8 +350,8 @@ class Football() :
         @classmethod
         def pretty(cls,data) :                
             ret = PD.DataFrame(data)
-            log.debug((len(ret.columns)),list(ret.columns))
-            drop = [ name for name in list(ret.columns) if name in ['url', 'color ','path','startTimeEpoch','seoName','shortName']]
+            log.debug((len(ret.columns),list(ret.columns)))
+            drop = [ name for name in list(ret.columns) if name in cls.drop_columns]
             ret.drop(drop, axis=1, inplace=True)
             ret['homeTeam'] = ret['homeTeam'].replace(['true'],'Home')
             ret['homeTeam'] = ret['homeTeam'].replace(['false'],'Away')
@@ -358,8 +359,8 @@ class Football() :
             
             ret = ret.reindex(columns=columns)
             ret['startDate'] = PD.to_datetime(ret['startDate'], format='%m-%d-%Y')
-            ret = ret.rename(columns={"homeTeam":"Home Team"})
-            log.debug((len(ret.columns)),list(ret.columns))
+            ret = ret.rename(columns={"homeTeam":"Home Team", "shortname" : "Team Name"})
+            log.debug((len(ret.columns),list(ret.columns)))
             log.debug(ret.head())
             return ret
         @classmethod
