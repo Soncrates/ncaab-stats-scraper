@@ -27,6 +27,7 @@ from libScrapeNCAAFunctions import try_02, validate as validate_url
 class SportExtract() :
             url_weekly = 'https://data.ncaa.com/casablanca/scoreboard/{sport_code}/{year}/{week}/scoreboard.json'
             url_stats_football = 'https://data.ncaa.com/casablanca{url}/teamStats.json'
+            url_score_football = 'https://data.ncaa.com/casablanca{url}/gameInfo.json'
             url_stats_lacrosse = 'https://data.ncaa.com/casablanca{url}/boxscore.json'
             headers = {"Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
                        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.95 Safari/537.36'}
@@ -48,6 +49,41 @@ class SportExtract() :
             default_params = { "year" : 2021
                               }
             @staticmethod
+            def extract(sport, **kvargs):
+                ret = []
+                for game_value, score_list, stat_value in SportExtract.extract_value(sport, **kvargs) :
+                    stat_value.update(game_value)
+                    score = 'away'
+                    if stat_value.get('homeTeam') == 'true' :
+                        score = 'home'
+                    score = score_list.get(score)
+                    if score.get('seo') != stat_value.get('seoName') :
+                        log.warn("unexpected mismatch seo {} vs {}".format(score.get('seo'),stat_value.get('seoName')))
+                        continue
+                    stat_value['score'] = score.get('score')
+                    log.debug(stat_value) 
+                    ret.append(stat_value)
+                    #break
+                return sport.pretty(ret)
+            @staticmethod
+            def extract_value(sport, **kvargs):
+                for count, game_url in enumerate(sport.url_game_list(**kvargs)) :
+                    for game_key, game_value in GameExtract.get_team_list(sport,game_url).items() :
+                            game_value['Week'] = count + 1
+                            score_list = ExtractPage.extract_score(sport,**game_value)
+                            url_stat = game_value.get('url_stat')
+                            for stat_key, stat_value in StatsExtract.get_stat_list(url_stat).items():
+                                yield game_value, score_list, stat_value
+            @staticmethod
+            def get_url_game_list(**ret) :
+                ret = SportExtract.convert_params(ret)
+                ret = SportExtract.get_date_range(**ret)
+                ret = [ SportExtract.url_weekly.format(**params) for params in ret ]
+                ret = [ url for url in ret if validate_url(url,SportExtract.headers) ]
+                msg = pretty_print(ret)
+                log.debug(msg)
+                return ret
+            @staticmethod
             def convert_params(kvargs) :
                 if kvargs :
                    log.debug(kvargs)
@@ -62,25 +98,6 @@ class SportExtract() :
                 ret['week'] = week
                 return ret
             @staticmethod
-            def extract(sport, **kvargs):
-                ret = []
-                [ ret.extend(ExtractPage.extract(sport, url)) for url in sport.url_game_list(**kvargs) ]
-                return sport.pretty(ret)            
-            @staticmethod
-            def get_team_list(sport,url) :
-                try :
-                    response = try_02(url,SportExtract.headers) 
-                    return GameExtract.extract(sport, **response.json())
-                except :
-                    return {}
-            @staticmethod
-            def get_stat_list(url) :
-                try :
-                  response = try_02(url ,SportExtract.headers)
-                  return StatsExtract.extract(**response.json())
-                except :
-                    return {}
-            @staticmethod
             def get_date_range(**kvargs) :
                 year = int(kvargs.get('year',2021))
                 month = int(kvargs.get('month',1))
@@ -92,45 +109,67 @@ class SportExtract() :
                 #msg = pretty_print(ret)
                 #log.debug(msg)
                 return ret
-            @staticmethod
-            def get_url_game_list(**ret) :
-                ret = SportExtract.convert_params(ret)
-                ret = SportExtract.get_date_range(**ret)
-                ret = [ SportExtract.url_weekly.format(**params) for params in ret ]
-                ret = [ url for url in ret if validate_url(url,SportExtract.headers) ]
-                msg = pretty_print(ret)
-                log.debug(msg)
-                return ret
 class ExtractPage() :
         @classmethod
         def extract(cls,sport, url) :
-            ret = [ stat for stat in cls.extract_alt(sport, url)]
+            ret = [ stat for stat in cls.extract_stats(sport, url)]
             #msg = pretty_print(ret)
             #log.debug(msg)
             return ret
         @classmethod
-        def extract_alt(cls,sport, url) :
-            for game_key, game_value in SportExtract.get_team_list(sport,url).items() :
-                team_url = game_value.get('url')
-                for stat_key, stat_value in SportExtract.get_stat_list(team_url).items():
+        def extract_stats(cls,sport, url) :
+            for game_key, game_value in GameExtract.get_team_list(sport,url).items() :
+                team_url = game_value.get('url_stat')
+                for stat_key, stat_value in StatsExtract.get_stat_list(team_url).items():
                     stat_value.update(game_value)
                     msg = pretty_print(stat_value)
                     log.debug(msg)
                     yield stat_value
-            
+        @classmethod
+        def extract_score(cls,sport, **ret) :
+                log.debug(ret)
+                url_score = ret.get('url_score')
+                return ScoreExtract.get_score(sport,url_score)
+class ScoreExtract :
+        @classmethod
+        def get_score(cls,sport,url) :
+            try :
+                log.debug(url)
+                response = try_02(url,SportExtract.headers) 
+                return cls.extract(sport, **response.json())
+            except :
+                return {}
+        @classmethod
+        def extract(cls,sport, **args) :
+            ret = { key : value for key, value in args.items() if key in ['home','away']}
+            for key, value in ret.items() :
+                names = value.pop('names')
+                value.update(names)
+                ret[key] = { x : y for x, y in value.items() if x in sport.score_columns }
+            msg = pretty_print(ret)
+            log.debug(msg)
+            return ret
+      
 class GameExtract() :
         fields = ["away","gameID", "home", "startTime", "startDate", "startTimeEpoch", "title", "url"]
         fields = ["gameID", "startTime", "startDate", "startTimeEpoch", "title", "url"]
+        @classmethod
+        def get_team_list(cls,sport,url) :
+            try :
+                response = try_02(url,SportExtract.headers) 
+                return cls.extract(sport, **response.json())
+            except :
+                return {}
         @classmethod
         def extract(cls,sport, **kvargs) :
             args = cls.get_game_list(**kvargs)
             args = { r.pop('gameID','0') : r for r in args}
             msg = pretty_print(args)
             log.debug(msg)
-            args = { key : cls.get_stat_url(sport, **value) for key, value in args.items()}
-            msg = pretty_print(args)
+            stats = { key : cls.get_meta(sport, **value) for key, value in args.items()}
+            msg = pretty_print(stats)
             log.debug(msg)
-            return args
+            return stats
         @classmethod
         def get_game_list(cls,**kvargs) :
             ret = kvargs.get('games')
@@ -141,18 +180,27 @@ class GameExtract() :
             #log.debug(msg)
             return ret
         @classmethod
-        def get_stat_url(cls,sport, **record) :
+        def get_meta(cls,sport, **record) :
             msg = pretty_print(record)
             log.debug(msg)
-            url = sport.get_stat_url().format(**record)
-            log.info(url)
+            url_stat = sport.get_stat_url().format(**record)
+            url_score = sport.get_score_url().format(**record)
+            log.info(url_stat)
             record['path'] = record.pop('url')
-            record['url'] = url
+            record['url_stat'] = url_stat
+            record['url_score'] = url_score
             msg = pretty_print(record)
             log.debug(msg)
             return record
 class StatsExtract() :
         columns = ['stats','goalieTotals','playerTotals','totalStats']
+        @classmethod
+        def get_stat_list(cls,url) :
+            try :
+              response = try_02(url ,SportExtract.headers)
+              return cls.extract(**response.json())
+            except :
+                return {}
         @classmethod
         def extract(cls,**kvargs) :
             ret = { key: value for key, value in cls.extract_alt(**kvargs) }
@@ -204,6 +252,7 @@ class StatsExtract() :
             breakdown = { stat + " " + key : value for (key,value) in bd.items() }
             ret.update(breakdown)
             return ret
+        
 '''
     2022 Season
     1054 total records ~1000
@@ -224,6 +273,9 @@ class Lacrosse() :
         @classmethod
         def get_stat_url(cls) :
             return SportExtract.url_stats_lacrosse
+        @classmethod
+        def get_score_url(cls) :
+            return SportExtract.url_score_football
         @classmethod
         def pretty(cls,data) :                
             ret = PD.DataFrame(data)
@@ -261,6 +313,9 @@ class Basketball() :
         def get_stat_url(cls) :
             return SportExtract.url_stats_lacrosse
         @classmethod
+        def get_score_url(cls) :
+            return SportExtract.url_score_football
+        @classmethod
         def pretty(cls,data) :                
             ret = PD.DataFrame(data)
             log.debug(list(ret.columns))
@@ -295,8 +350,10 @@ class Soccer() :
             return SportExtract.get_url_game_list(**ret)
         @classmethod
         def get_stat_url(cls) :
-            log.info(SportExtract.url_stats_lacrosse)
             return SportExtract.url_stats_lacrosse
+        @classmethod
+        def get_score_url(cls) :
+            return SportExtract.url_score_football
         @classmethod
         def pretty(cls,data) :                
             ret = PD.DataFrame(data)
@@ -317,7 +374,7 @@ class Soccer() :
     2021 Season
     1787 total records ~1800
     ~2.5 minutes per record ~75 hours
-    ~10 dollars per hour ~$760
+    ~10 dollars per hour ~$750
     ~12 months ~$65 per month
 '''
 class Football() :
@@ -326,6 +383,8 @@ class Football() :
         basic_columns = ['startDate', 'startTime', 'homeTeam', 'shortname', 'title']
         default_columns = ['1st Downs', 'Passing', 'Passing Interceptions', 'Rushing',  'Total Offense', 'Total Offense Plays', 'Fumbles: Number-Lost','Punting: Number-Yards', 'Fourth-Down Conversions', 'Fumbles:Number-Lost', 'Penalties: Number-Yards', 'Third-Down Conversions']
         drop_columns = ['url', 'color ','path','startTimeEpoch','seoName','sixCharAbbr']
+        score_columns = ["6Char","full","score","seo","short"]
+
         @classmethod
         def url_game_list(cls,**kvargs) :
             ret = deepcopy(cls.default_params)
@@ -341,6 +400,9 @@ class Football() :
         def get_stat_url(cls) :
             return SportExtract.url_stats_football
         @classmethod
+        def get_score_url(cls) :
+            return SportExtract.url_score_football
+        @classmethod
         def get_weeks(cls) :
             ret = [ str(week).rjust(2,'0') for week in range(1,16 ) ]
             ret.append('P')
@@ -350,18 +412,53 @@ class Football() :
         @classmethod
         def pretty(cls,data) :                
             ret = PD.DataFrame(data)
-            log.debug((len(ret.columns),list(ret.columns)))
-            drop = [ name for name in list(ret.columns) if name in cls.drop_columns]
-            ret.drop(drop, axis=1, inplace=True)
             ret['homeTeam'] = ret['homeTeam'].replace(['true'],'Home')
             ret['homeTeam'] = ret['homeTeam'].replace(['false'],'Away')
-            columns = cls.sort_columns(*list(ret.columns))
-            
-            ret = ret.reindex(columns=columns)
             ret['startDate'] = PD.to_datetime(ret['startDate'], format='%m-%d-%Y')
-            ret = ret.rename(columns={"homeTeam":"Home Team", "shortname" : "Team Name"})
+            return ret
+        @classmethod
+        def sort_columns(cls,*ref) :                
+            ret=deepcopy(cls.basic_columns)
+            ret.extend([key for key in sorted(ref) if key in cls.default_columns])
+            log.debug(ret)
+            return ret
+                
+class Football_Steve() :
+        basic_columns_pre = ['startDate', 'startTime', 'homeTeam', 'shortname', 'title', 'score','week']
+        basic_columns_post = ['startDate', 'startTime', 'Home Team', 'Name', 'title', 'score']
+        default_columns_pre = ['1st Downs', 'Passing', 'Passing Interceptions', 'Rushing',  'Total Offense', 'Total Offense Plays', 'Fumbles: Number-Lost','Punting: Number-Yards', 'Fourth-Down Conversions', 'Fumbles:Number-Lost', 'Penalties: Number-Yards', 'Third-Down Conversions']
+        default_columns_post = ['1st Downs', 'Passing', 'Passing Interceptions', 'Rushing',  'Total Offense', 'Total Offense Plays', 'Fumbles: Number-Lost','Punting: Number-Yards', 'Fourth-Down Conversions', 'Fumbles:Number-Lost', 'Penalties: Number-Yards', 'Third-Down Conversions']
+        rename = {"homeTeam":"Home Team", "shortname" : "Team Name"}
+        @classmethod
+        def pretty(cls,data) :                
+            ret = PD.DataFrame(data)
+            log.debug((len(ret.columns),list(ret.columns)))
+            
+            columns=deepcopy(cls.basic_columns_pre)
+            columns.extend(cls.default_columns_pre)
+            columns = [key for key in columns if key in sorted(list(ret.columns)) ]
+            #log.debug(columns)
+            
+            ret = ret[columns]
+            ret = ret.reindex(columns=columns)
+            ret = ret.rename(columns=cls.rename)
             log.debug((len(ret.columns),list(ret.columns)))
             log.debug(ret.head())
+            return ret
+        @classmethod
+        def addIcon(cls,ret,icon) :
+            ret = ret.merge(icon, left_on='Team Name', right_on='Team',how="outer")
+            ret['Icon'].fillna(ret['Team Name'],inplace=True)
+            ret = ret[ ~(ret['startDate'].isna() & ret['startTime'].isna()) ]
+            ret = ret.rename(columns={'Icon':'Name'})
+
+            columns = deepcopy(cls.basic_columns_post)
+            columns.extend(cls.default_columns_post)
+            columns = [key for key in columns if key in sorted(list(ret.columns)) ]
+            log.debug((len(ret.columns),list(ret.columns)))
+
+            ret.sort_values(by=columns,inplace=True,ascending=False)
+            ret = ret[columns]
             return ret
         @classmethod
         def sort_columns_all(cls,*ref) :                
@@ -375,10 +472,3 @@ class Football() :
             ret.extend(ref)
             log.debug(ret)
             return ret
-        @classmethod
-        def sort_columns(cls,*ref) :                
-            ret=deepcopy(cls.basic_columns)
-            ret.extend([key for key in sorted(ref) if key in cls.default_columns])
-            log.debug(ret)
-            return ret
-                
